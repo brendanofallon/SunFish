@@ -273,14 +273,16 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 	public void goback() {
 		if (isBusy()) //We're busy right now 
 			return;
+		
 		int shifted = currentTrees.extendLeft(1);
 		if (shifted == 0)
 			return;
+		
 		if (rows ==1) {
 			mousePos.x = -1;
 			mousePos.y = -1;
 			elapsedTime = 0;
-			//System.out.println("Adding to begining, current size is : " + currentTrees.size());
+			//System.out.println("Adding to beginning, current size is : " + currentTrees.size());
 			advanceOffset = 0;
 			retracting = true;
 			

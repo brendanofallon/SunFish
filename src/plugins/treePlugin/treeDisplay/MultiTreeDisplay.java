@@ -61,8 +61,8 @@ public class MultiTreeDisplay extends Display {
 	public static final String UPPER_LEFT_POSITION = "Upper left";
 	public static final String LOWER_LEFT_POSITION = "Lower left";
 	
-	String[] fontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-	Integer[] fontSizeChoices = {5,6,7,8,9,10,11,12,13,14,16,18,20,22,24,30,36,40,44,48,64,72};
+	final static String[] fontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+	final static Integer[] fontSizeChoices = {5,6,7,8,9,10,11,12,13,14,16,18,20,22,24,30,36,40,44,48,64,72};
 	NumberFormat formatter = new DecimalFormat("0.0###");
 	
 	private JPanel parentPanel;

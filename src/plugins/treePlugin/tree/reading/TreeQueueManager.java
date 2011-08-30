@@ -48,16 +48,17 @@ public class TreeQueueManager {
 		int treesRead = 0;
 		while(treesRead<howmany) {
 			tree = reader.getNextTree();
-			currentIndex++;
 			if (tree==null)
 				break;
 			else {
+				currentIndex++;
 				treesRead++;
 				queue.addLast(tree);
 				rightIndex++;
 			}
 		}
-		//System.out.println("Extending right by " + howmany + " trees, current index : " + currentIndex + " left")
+
+		System.out.println("Extending right by " + howmany + " trees. Trees read: " + treesRead + " current index : " + currentIndex + " left index: " + leftIndex + " right index: " + rightIndex);
 		return treesRead;
 	}
 	
@@ -77,16 +78,20 @@ public class TreeQueueManager {
 		int treesRead = 0;
 		while(treesRead<howmany) {
 			tree = reader.getPreviousTree();
-			currentIndex--;
 			if (tree==null) {
 				break;
 			}
 			else {
+				currentIndex--;
 				treesRead++;
 				queue.addFirst(tree);
 				leftIndex--;
 			}
 		}
+
+		if (currentIndex < 0)
+			currentIndex = 0;
+		System.out.println("Extending left by " + howmany + " trees. Trees read: " + treesRead + " current index : " + currentIndex + " left index: " + leftIndex + " right index: " + rightIndex);
 		return treesRead;
 	}
 	
