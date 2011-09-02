@@ -104,7 +104,7 @@ public class TreeDrawer implements TreeListener {
 		topPadding = 0;
 		bottomPadding = 20;
 		workingPoint = new java.awt.Point();
-		scaleLabelFont = new Font("Sans", Font.PLAIN, 12);
+		scaleLabelFont = new Font("Sans", Font.PLAIN, 10);
 		highlightColor = new Color(10, 225, 225);
 		highlightStroke = new BasicStroke(3.25f); 
 		normalColor = Color.black;
@@ -226,7 +226,7 @@ public class TreeDrawer implements TreeListener {
 				topPadding +=  dif/2;
 				bottomPadding += dif/2;
 			}
-			System.out.println("Width: " + getDrawingWidth() + " Height: " + getDrawingHeight());
+			//System.out.println("Width: " + getDrawingWidth() + " Height: " + getDrawingHeight());
 			//int y = translateTreeToPixelY(0);
 			//System.out.println("SetDrawBounds: toppadding : " + topPadding + " leftPadding : " + leftPadding);
 			//System.out.println("Drawable width : " + (getWidth()-leftPadding-rightPadding) + " draw height : " + (getHeight()-topPadding-bottomPadding));
@@ -443,32 +443,34 @@ public class TreeDrawer implements TreeListener {
 	 * Turns on/off drawing of a scale bar. If on, this will turn off scale axis drawing.
 	 * @param drawScaleBar
 	 */
-	public void setDrawScaleBar(boolean drawScaleBar) {
-		this.drawScaleBar = drawScaleBar;
-		if (drawScaleBar) {
-			drawScaleAxis = false;
-			makeSpaceForScaleBar();
-		}
-		else {
-			removeScaleBarSpace();
-		}
-	}
+	//Now deprecated, use DrawableTree.setScaleType instead. This is because in MultiTreeCharts the same drawer is used to draw multiple trees
+	//but trees can be indepdently configured to show their axis or not. 
+//	public void setDrawScaleBar(boolean drawScaleBar) {
+//		this.drawScaleBar = drawScaleBar;
+//		if (drawScaleBar) {
+//			drawScaleAxis = false;
+//			makeSpaceForScaleBar();
+//		}
+//		else {
+//			removeScaleBarSpace();
+//		}
+//	}
 
 
 	/**
 	 * Turn on/off scale axis drawing. If on, this will turn off scale bar drawing. 
 	 * @param drawScaleAxis
 	 */
-	public void setDrawScaleAxis(boolean drawScaleAxis) {
-		this.drawScaleAxis = drawScaleAxis;
-		if (drawScaleAxis) {
-			drawScaleBar = false;
-			makeSpaceForScaleBar();
-		}
-		else {
-			removeScaleBarSpace();
-		}
-	}
+//	public void setDrawScaleAxis(boolean drawScaleAxis) {
+//		this.drawScaleAxis = drawScaleAxis;
+//		if (drawScaleAxis) {
+//			drawScaleBar = false;
+//			makeSpaceForScaleBar();
+//		}
+//		else {
+//			removeScaleBarSpace();
+//		}
+//	}
 	
 	public void setClearBeforeDrawing(boolean clear) {
 		this.clearBeforeDrawing = clear;
@@ -494,6 +496,25 @@ public class TreeDrawer implements TreeListener {
 		if (clearBeforeDrawing) {
 			g2d.setColor(Color.white);
 			g2d.fill(bounds);
+		}
+		
+		if (tree.getScaleType()==DrawableTree.NO_SCALE_BAR) {
+			drawScaleBar = false;
+			drawScaleAxis = false;
+			drawYGrid = false;
+			removeScaleBarSpace();
+		}
+		if (tree.getScaleType()==DrawableTree.SCALE_BAR) {
+			drawScaleBar = true;
+			drawScaleAxis = false;
+			drawYGrid = false;
+			makeSpaceForScaleBar();
+		}
+		if (tree.getScaleType()==DrawableTree.SCALE_AXIS) {
+			drawScaleAxis = true;
+			drawScaleBar = false;
+			//drawYGrid = true;
+			makeSpaceForScaleBar();
 		}
 		
 		if ( (! bounds.equals( boundaries)) || forceRecalculateBounds) {
@@ -526,21 +547,7 @@ public class TreeDrawer implements TreeListener {
 		}
 		
 		
-		if (tree.getScaleType()==DrawableTree.NO_SCALE_BAR) {
-			drawScaleBar = false;
-			drawScaleAxis = false;
-			drawYGrid = false;
-		}
-		if (tree.getScaleType()==DrawableTree.SCALE_BAR) {
-			drawScaleBar = true;
-			drawScaleAxis = false;
-			drawYGrid = false;
-		}
-		if (tree.getScaleType()==DrawableTree.SCALE_AXIS) {
-			drawScaleAxis = true;
-			drawScaleBar = false;
-			drawYGrid = true;
-		}
+
 		
 		if (drawYGrid) {
 			drawYGridlines(g2d);
@@ -1056,12 +1063,15 @@ public class TreeDrawer implements TreeListener {
 	
 	public void drawScaleBar(Graphics2D g2d) {
 		if (! scaleBarCalculated ) {
-			double lengthUnits = 100.0 / branchScale; // (pixels / (pixels/unit) = units)
-
-
+			int treeLengthPixels = getWidth()-leftPadding-rightPadding-labelSpace;			
+			int barLengthPixels = Math.max(treeLengthPixels/5, 28);
+			
+			double treeHeightFraction = (double)barLengthPixels / (double)treeLengthPixels;
+			double barLengthBranchUnits = treeHeightFraction * treeMaxHeight;
+			
 			scaleBarCalculated = true;
-			scaleBarPixels = (int)Math.round(lengthUnits * branchScale);
-			scaleBarLabel = StringUtilities.format( lengthUnits );
+			scaleBarPixels = barLengthPixels;
+			scaleBarLabel = StringUtilities.format( barLengthBranchUnits );
 		}
 		
 		

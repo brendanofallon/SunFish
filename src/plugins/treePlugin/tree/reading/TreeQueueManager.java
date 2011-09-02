@@ -58,7 +58,7 @@ public class TreeQueueManager {
 			}
 		}
 
-		System.out.println("Extending right by " + howmany + " trees. Trees read: " + treesRead + " current index : " + currentIndex + " left index: " + leftIndex + " right index: " + rightIndex);
+		//System.out.println("Extending right by " + howmany + " trees. Trees read: " + treesRead + " current index : " + currentIndex + " left index: " + leftIndex + " right index: " + rightIndex);
 		return treesRead;
 	}
 	
@@ -91,7 +91,7 @@ public class TreeQueueManager {
 
 		if (currentIndex < 0)
 			currentIndex = 0;
-		System.out.println("Extending left by " + howmany + " trees. Trees read: " + treesRead + " current index : " + currentIndex + " left index: " + leftIndex + " right index: " + rightIndex);
+		//System.out.println("Extending left by " + howmany + " trees. Trees read: " + treesRead + " current index : " + currentIndex + " left index: " + leftIndex + " right index: " + rightIndex);
 		return treesRead;
 	}
 	
@@ -161,8 +161,8 @@ public class TreeQueueManager {
 		}
 		
 		int count = 0;
-		DrawableTree tree = null;
 		Iterator<DrawableTree> it = queue.iterator();
+		DrawableTree tree = it.next();
 		while(count<which && it.hasNext()) {
 			tree = it.next();
 			count++;

@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
@@ -25,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.Timer;
@@ -137,14 +139,14 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
             }
         });
 		
-		JMenuItem showScaleBar = new JMenuItem("Show scale bar");
+		showScaleBar = new JCheckBoxMenuItem("Show scale bar");
 		showScaleBar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 showScaleBar();
             }
         });
 		
-		JMenuItem showScaleAxis = new JMenuItem("Show scale axis");
+		showScaleAxis = new JCheckBoxMenuItem("Show scale axis");
 		showScaleAxis.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 showScaleAxis();
@@ -171,15 +173,17 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 	}
 
 	protected void showScaleAxis() {
-		if (selectedTree != null) {
+		if (selectedTree != null && showScaleAxis.isSelected()) {
 			selectedTree.setScaleType(DrawableTree.SCALE_AXIS);
+			showScaleBar.setSelected(false);			
 		}
 		repaint();
 	}
 
 	protected void showScaleBar() {
-		if (selectedTree != null) {
+		if (selectedTree != null  && showScaleBar.isSelected()) {
 			selectedTree.setScaleType(DrawableTree.SCALE_BAR);
+			showScaleAxis.setSelected(false);			
 		}
 		repaint();
 	}
@@ -345,9 +349,7 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 		int boxWidth = (int)(width/(double)cols);
 		int boxHeight = (int)(height/(double)rows);
 		Iterator<DrawableTree> treeit = currentTrees.iterator();
-		Rectangle treeSelectionBox = null;
 		
-		int count = 0;
 		for(int row=0; row<rows; row++) {
 			boundsRect.y = row*boxHeight;
 			for(int col=0; col<cols; col++) {
@@ -367,22 +369,14 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 						boolean selected = tree.setSelectedNodes(translatedRect);
 					}
 					
-					treeDrawer.setDrawScaleAxis(true);
-
 					treeDrawer.paint(g2d, boundsRect);
-					count++;
 					
-					if (boundsRect.contains(mousePos)) {
-						treeSelectionBox = new Rectangle(boundsRect);
-						selectedTree = tree;
-					}
+//					if (boundsRect.contains(mousePos)) {
+//						selectedTree = tree;
+//					}
 				}
 			}//cols
 		}//rows
-		
-		if (treeSelectionBox!=null) {
-			drawSelectionRectangle(g2d, treeSelectionBox);
-		}
 
 	}
 	
@@ -486,10 +480,53 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 		return trees;
 	}	
 	
+	/**
+	 * Return the tree that is in some broad sense "underneath" the given point and return it. It may be null. 
+	 * @param pos
+	 * @return The tree corresponding to the given point
+	 */
+	private DrawableTree findSelectedTree(Point pos) {
+		double boxWidth = this.getWidth()/(double)cols;
+		double boxHeight = this.getHeight()/(double)rows;
+				
+		int c = (int) Math.floor((double)pos.getX() / boxWidth);
+		int r = (int) Math.floor((double)pos.getY() / boxHeight);
+		
+		int treeIndex = r*cols + c;
+		if (treeIndex < currentTrees.size()) {
+			System.out.println("Found row: " + r + " col: " + c + " index: " + treeIndex);
+			return currentTrees.get(treeIndex);
+		}
+		
+		System.out.println("Found row: " + r + " col: " + c + " index: " + treeIndex + " .. returning null!");
+		
+//		int count = 0;
+//		for(int row=0; row<rows; row++) {
+//			boundsRect.y = (int)(row*boxHeight);
+//			for(int col=0; col<cols; col++) {
+//				boundsRect.x = (int)(col*boxWidth);
+//
+//				if (treeit.hasNext()) {
+//					DrawableTree tree = treeit.next();
+//					if (boundsRect.contains(pos)) {
+//
+//						System.out.println("Found tree at row: " + row + " col: " +col + " index: " + count);
+//						return tree;
+//					}
+//				}
+//				count++;
+//
+//			}
+//		}
+		return null;
+	}
+	
 	public void mousePressed(MouseEvent e) {
 		mouseDrag = true;
 		mouseBegin.width = e.getX();
 		mouseBegin.height = e.getY();		
+		System.out.println("Finding selected tree...");
+		selectedTree = findSelectedTree(e.getPoint());
 	}
 
 	public void mouseReleased(MouseEvent e) {
@@ -571,11 +608,37 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 
 	    private void maybeShowPopup(MouseEvent e) {
 	        if (e.isPopupTrigger()) {
+        		selectedTree = findSelectedTree(e.getPoint());
+	        	if (selectedTree != null) {
+	        		if (selectedTree.getScaleType() == DrawableTree.NO_SCALE_BAR) {
+	        			showScaleBar.setSelected(false);
+	        			showScaleAxis.setSelected(false);
+	        		}
+	        		
+	        		if (selectedTree.getScaleType() == DrawableTree.SCALE_AXIS) {
+	        			System.out.println("Selected tree scale type is AXIS");
+	        			showScaleBar.setSelected(false);
+	        			showScaleAxis.setSelected(true);
+	        		}
+	        		
+	        		if (selectedTree.getScaleType() == DrawableTree.SCALE_BAR) {
+	        			System.out.println("Selected tree scale type is BAR");
+	        			showScaleBar.setSelected(true);
+	        			showScaleAxis.setSelected(false);
+	        		}
+	        		
+	        	}
 	            popup.show(e.getComponent(),
 	                       e.getX(), e.getY());
 	        }
 	    }
 	}
+	
+	
+	
+	private JCheckBoxMenuItem showScaleBar;
+	private JCheckBoxMenuItem showScaleAxis;
+
 
 	
 }

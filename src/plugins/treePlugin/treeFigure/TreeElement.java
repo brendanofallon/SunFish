@@ -24,9 +24,9 @@ public class TreeElement extends FigureElement {
 	public TreeElement(Figure parent) {
 		super(parent);
 		treeDrawer = new TreeDrawer();
-		treeDrawer.setDrawScaleAxis(false);
-		treeDrawer.setDrawScaleBar(false);
-		treeDrawer.setDrawYGrid(false);
+//		treeDrawer.setDrawScaleAxis(false);
+//		treeDrawer.setDrawScaleBar(false);
+//		treeDrawer.setDrawYGrid(false);
 		treeDrawer.setClearBeforeDrawing(false);
 		pixelBounds = new Rectangle(0, 0, 0, 0);
 	}
