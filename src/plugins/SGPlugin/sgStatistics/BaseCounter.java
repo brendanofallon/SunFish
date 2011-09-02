@@ -226,6 +226,7 @@ public abstract class BaseCounter implements SGCalculator {
 	public boolean isPolymorphic(int site) {
 		if (sg.size()==0)
 			return false;
+		
 		char base = sg.get(0).at(site);
 		int seqNum = 0;
 		while (seqNum < sg.size() && charIsGap(base) ) {
@@ -253,7 +254,7 @@ public abstract class BaseCounter implements SGCalculator {
 	 * @return
 	 */
 	public static boolean charIsGap(char base) {
-		return (base == Sequence.GAP);
+		return (base == Sequence.GAP) || (base == Sequence.UNKNOWN);
 	}
 	
 	/**

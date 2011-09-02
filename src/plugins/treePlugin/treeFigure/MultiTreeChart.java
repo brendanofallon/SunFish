@@ -494,30 +494,10 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 		
 		int treeIndex = r*cols + c;
 		if (treeIndex < currentTrees.size()) {
-			System.out.println("Found row: " + r + " col: " + c + " index: " + treeIndex);
 			return currentTrees.get(treeIndex);
 		}
 		
-		System.out.println("Found row: " + r + " col: " + c + " index: " + treeIndex + " .. returning null!");
-		
-//		int count = 0;
-//		for(int row=0; row<rows; row++) {
-//			boundsRect.y = (int)(row*boxHeight);
-//			for(int col=0; col<cols; col++) {
-//				boundsRect.x = (int)(col*boxWidth);
-//
-//				if (treeit.hasNext()) {
-//					DrawableTree tree = treeit.next();
-//					if (boundsRect.contains(pos)) {
-//
-//						System.out.println("Found tree at row: " + row + " col: " +col + " index: " + count);
-//						return tree;
-//					}
-//				}
-//				count++;
-//
-//			}
-//		}
+
 		return null;
 	}
 	
@@ -525,7 +505,6 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 		mouseDrag = true;
 		mouseBegin.width = e.getX();
 		mouseBegin.height = e.getY();		
-		System.out.println("Finding selected tree...");
 		selectedTree = findSelectedTree(e.getPoint());
 	}
 
@@ -628,6 +607,7 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 	        		}
 	        		
 	        	}
+	        	
 	            popup.show(e.getComponent(),
 	                       e.getX(), e.getY());
 	        }
