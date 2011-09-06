@@ -13,16 +13,18 @@ import java.awt.Stroke;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 
-
 import figure.Figure;
 import figure.FigureElement;
 import figure.series.AxesConfigFrame.AxesOptions;
 import guiWidgets.StringUtilities;
+
+
 
 /**
  * Paints graph axes in the specified boundaries, using the minXVal... etc to paint labels.
@@ -45,11 +47,16 @@ public class AxesElement extends FigureElement {
 	double maxYVal = 1;
 	
 	double xTickSpacing = 1.0;
-
 	double yTickSpacing = 1.0;
+	boolean hasUserXTickNum = false;	//True if user has set x tick number
+	boolean hasUserYTickNum = false;	//True if user has set y tick number
 	double xTickWidth = 0.02;
 	double yTickWidth = 0.01;
-	int fontSize = 11;
+	int fontSize = 12;
+	
+	//These indicate if the user has set values for the x or y axis, and they we should not auto-set them
+	boolean hasUserX = false;
+	boolean hasUserY = false;
 	
 	boolean drawYGrid = true;
 	Color yGridColor = Color.lightGray;
@@ -106,8 +113,8 @@ public class AxesElement extends FigureElement {
 	
 	List<String> xLabelList = null; //An alternate listing of string-valued x labels. This is used for integer values if it is not null.
 
-	element.Point mouseDragStart = new element.Point(0,0);
-	element.Point mouseDragEnd = new element.Point(0, 0);
+	Point2D mouseDragStart = new Point2D.Double(0,0);
+	Point2D mouseDragEnd = new Point2D.Double(0, 0);
 	boolean mouseIsBeingDragged = false; 
 	
 	//Controls whether dragging the mouse causes the rectangular selection area to appear
@@ -136,15 +143,24 @@ public class AxesElement extends FigureElement {
 		mousePos = new java.awt.Point(0,0);
 	}
 	
+	/**
+	 * Set the point size of the font used to draw the axes labels
+	 * @param fontSize
+	 */
+	public void setFontSize(int fontSize) {
+		this.fontSize = fontSize;
+		xLabelFont = new Font("Sans", Font.PLAIN, fontSize);
+		exponentFont = new Font("Sans", Font.PLAIN, round(fontSize/1.3));
+	}
 	
-	protected void mouseMoved(element.Point pos) {
+	protected void mouseMoved(Point2D pos) {
 		if (bounds.contains(pos)) {
-			double dataX = boundsXtoDataX(pos.x);
-			double dataY = boundsYtoDataY(pos.y);
+			double dataX = boundsXtoDataX(pos.getX());
+			double dataY = boundsYtoDataY(pos.getY());
 			if (dataX>= minXVal && dataX <= maxXVal && dataY >= minYVal && dataY <= maxYVal) {
 				drawMousePosTick = true;
-				mousePos.x = round(pos.x*xFactor);
-				mousePos.y = round(pos.y*yFactor);
+				mousePos.x = round(pos.getX()*xFactor);
+				mousePos.y = round(pos.getY()*yFactor);
 			}
 			else {
 				drawMousePosTick = false;
@@ -174,53 +190,53 @@ public class AxesElement extends FigureElement {
 		xLabelList = null;
 	}
 	
-	protected void mousePressed(element.Point pos) {
-		mouseDragStart.x = pos.x; //It's just the x values that we care about
-		mouseDragEnd.x = mouseDragStart.x;
+	protected void mousePressed(Point2D pos) {
+		mouseDragStart.setLocation(pos);  
+		mouseDragEnd.setLocation(pos);
 		isRangeSelected = false;
 		leftMarkerPos = 0;
 		rightMarkerPos = 0;
 	}
 	
-	protected void mouseReleased(element.Point pos) {
+	protected void mouseReleased(Point2D pos) {
 		mouseIsBeingDragged = false;
 		
-		if (allowMouseDragSelection && mouseDragStart.x != mouseDragEnd.x) {
-			double newXMin = Math.min(mouseDragStart.x, mouseDragEnd.x);
-			double newXMax = Math.max(mouseDragStart.x, mouseDragEnd.x);
+		if (allowMouseDragSelection && mouseDragStart.getX() != mouseDragEnd.getX()) {
+			double newXMin = Math.min(mouseDragStart.getX(), mouseDragEnd.getX());
+			double newXMax = Math.max(mouseDragStart.getX(), mouseDragEnd.getX());
 
 			newXMin = this.boundsXtoDataX(newXMin);
 			newXMax = this.boundsXtoDataX(newXMax);
 
-			if (mouseDragStart.x < mouseDragEnd.x) {
-				leftMarkerPos = (int)Math.round( xFactor*mouseDragStart.x);
-				rightMarkerPos = (int)Math.round( xFactor*mouseDragEnd.x);	
+			if (mouseDragStart.getX() < mouseDragEnd.getX()) {
+				leftMarkerPos = (int)Math.round( xFactor*mouseDragStart.getX());
+				rightMarkerPos = (int)Math.round( xFactor*mouseDragEnd.getX());	
 			}
 			else {
-				leftMarkerPos = (int)Math.round( xFactor*mouseDragEnd.x);
-				rightMarkerPos = (int)Math.round( xFactor*mouseDragStart.x);
+				leftMarkerPos = (int)Math.round( xFactor*mouseDragEnd.getX());
+				rightMarkerPos = (int)Math.round( xFactor*mouseDragStart.getX());
 			}
 		}
 		
-		mouseDragStart.x = 0;
-		mouseDragEnd.x = 0;
+		mouseDragStart.setLocation(0, 0);
+		mouseDragEnd.setLocation(0, 0);
 	
 	}
 	
 	/**
 	 * Called by the parental figure as the mouse is being dragged across this element
 	 */
-	protected void mouseDragged(element.Point pos) {
-		mouseDragEnd.x = pos.x;
+	protected void mouseDragged(Point2D pos) {
+		mouseDragEnd.setLocation(pos);
 		mouseIsBeingDragged = true;
 		isRangeSelected = true;
-		if (mouseDragStart.x < mouseDragEnd.x) {
-			leftMarkerPos = (int)Math.round( xFactor*mouseDragStart.x);
-			rightMarkerPos = (int)Math.round( xFactor*mouseDragEnd.x);	
+		if (mouseDragStart.getX() < mouseDragEnd.getX()) {
+			leftMarkerPos = (int)Math.round( xFactor*mouseDragStart.getX());
+			rightMarkerPos = (int)Math.round( xFactor*mouseDragEnd.getX());	
 		}
 		else {
-			leftMarkerPos = (int)Math.round( xFactor*mouseDragEnd.x);
-			rightMarkerPos = (int)Math.round( xFactor*mouseDragStart.x);
+			leftMarkerPos = (int)Math.round( xFactor*mouseDragEnd.getX());
+			rightMarkerPos = (int)Math.round( xFactor*mouseDragStart.getX());
 		}
 	}
 	
@@ -266,7 +282,6 @@ public class AxesElement extends FigureElement {
 		this.maxYVal = ymax;
 		this.minXVal = xmin;
 		this.minYVal = ymin;
-		
 		recalculateBounds = true;
 	}
 	
@@ -275,13 +290,13 @@ public class AxesElement extends FigureElement {
 		if (xAxisContains(pos.x, pos.y) )  {
 			isXSelected = true;
 			isYSelected = false;
-			configFrame.display(this, minXVal, maxXVal, xTickSpacing, pos, AxesConfigFrame.X_AXIS);
+			configFrame.display(this, minXVal, maxXVal, xTickSpacing, fontSize, pos, AxesConfigFrame.X_AXIS);
 		}
 		else {
 			if (yAxisContains(pos.x, pos.y) ) {
 				isXSelected = false;
 				isYSelected = true;
-				configFrame.display(this, minYVal, maxYVal, yTickSpacing, pos, AxesConfigFrame.Y_AXIS);
+				configFrame.display(this, minYVal, maxYVal, yTickSpacing, fontSize, pos, AxesConfigFrame.Y_AXIS);
 			}
 
 		}
@@ -298,8 +313,7 @@ public class AxesElement extends FigureElement {
 	}
 	
 	public void setNumXTicks(int num) {
-		xTickSpacing = (maxXVal - minXVal)/num;
-		
+		xTickSpacing = (maxXVal - minXVal)/num;	
 		recalculateBounds = true;
 	}
 	
@@ -320,10 +334,10 @@ public class AxesElement extends FigureElement {
 	 * 
 	 * @return The point at which the data point (0, 0) should be plotted, in pixels;
 	 */
-	public element.Point getOrigin() {
+	public Point2D getOrigin() {
 		double x = dataXtoFigureX(0);
 		double y = dataYtoFigureY(0);
-		return new element.Point(x, y);
+		return new Point2D.Double(x, y);
 	}
 	
 	public void setDrawMinorXTicks(boolean drawMinorXTicks) {
@@ -337,29 +351,45 @@ public class AxesElement extends FigureElement {
 	
 	
 	public void setXAxisOptions(AxesOptions ops) {
-		if (ops.min != Double.NaN)
+		if (ops.min != Double.NaN) {
+			if (ops.min!=minXVal)
+				hasUserX = true;
 			minXVal = ops.min;
-		if (ops.max != Double.NaN)
+		}
+		if (ops.max != Double.NaN) {
+			if (ops.max!=maxXVal)
+				hasUserX = true;
 			maxXVal = ops.max;
+		}
 		if (ops.tickSpacing > 0) {
 			this.xTickSpacing = ops.tickSpacing;
 		}
 
+		
 		drawXGrid = ops.drawAxis;
 		recalculateBounds = true;
+		setFontSize(ops.fontSize);
 		parent.repaint();
 	}
 	
 	public void setYAxisOptions(AxesOptions ops) {
-		if (ops.min != Double.NaN)
+		if (ops.min != Double.NaN) {
+			if (ops.min!=minYVal)
+				hasUserY = true;
 			minYVal = ops.min;
-		if (ops.max != Double.NaN)
+		}
+		if (ops.max != Double.NaN) {
+			if (ops.max!=maxYVal)
+				hasUserY = true;
 			maxYVal = ops.max;
+		}
 		if (ops.tickSpacing > 0) {
 			this.yTickSpacing = ops.tickSpacing;
 		}
+		
 		drawYGrid = ops.drawAxis;
 		recalculateBounds = true;
+		setFontSize(ops.fontSize);
 		parent.repaint();
 	}
 	
@@ -376,7 +406,7 @@ public class AxesElement extends FigureElement {
 	}
 	
 	private boolean yAxisContains(int x, int y) {
-		if (x > (graphAreaLeft-10) && x < (graphAreaLeft) ) {
+		if (x > (graphAreaLeft-8) && x < (graphAreaLeft+2) ) {
 			if (y > graphAreaTop && y < graphAreaBottom) {
 				return true;
 			}
@@ -435,6 +465,22 @@ public class AxesElement extends FigureElement {
 		isYSelected = false;
 	}
 	
+	public double getYMin() {
+		return minYVal;
+	}
+	
+	public double getYMax() {
+		return maxYVal;
+	}
+	
+	public double getXMax() {
+		return maxXVal;
+	}
+	
+	public double getXMin() {
+		return minXVal;
+	}
+	
 	/**
 	 * Recalculate some of the values in pixel units, this happens whenever the size changes.
 	 * @param g
@@ -480,9 +526,6 @@ public class AxesElement extends FigureElement {
 		
 		double figureX = boundsX*xFactor;
 		double x = figureXtoDataX(figureX);
-//		double x0 = figureXtoDataX(0);
-//		double xc = figureXtoDataX(graphAreaLeft);
-		//System.out.println("Pos: " + boundsX + " x0 " + x0 + " X. g.a. " + xc + " G.A. left: " + graphAreaLeft + " fig : " + figureX + " data: " + x);
 		return x;
 	}
 	
@@ -577,21 +620,23 @@ public class AxesElement extends FigureElement {
 	 */
 	public void setRationalTicks() {
 		double range = maxXVal - minXVal;
+		double numXticks = 4;
 		int log = (int)Math.floor( Math.log10(range));
 		int pow = (int)Math.round( Math.pow(10.0, log-2));
 		if (pow != 0)
-			xTickSpacing = Math.round(range/5.0*pow)/pow;
+			xTickSpacing = Math.round(range/numXticks*pow)/pow;
 		else
-			xTickSpacing = range/5.0;
+			xTickSpacing = range/numXticks;
 		//System.out.println("X range: " + range + " log: " + log + " pow: " + pow + " x spacing: " + xTickSpacing);
 		
+		double numYticks = 4;
 		range = maxYVal - minYVal;
 		log = (int)Math.floor( Math.log10(range));
 		pow = (int)Math.round( Math.pow(10.0, log-2));
 		if (pow != 0)
-			yTickSpacing = Math.round(range/5.0*pow)/pow;
+			yTickSpacing = Math.round(range/numYticks*pow)/pow;
 		else
-			yTickSpacing = range/5.0;
+			yTickSpacing = range/numYticks;
 		//System.out.println("Y range: " + range + " log: " + log + " pow: " + pow + " y spacing: " + yTickSpacing);
 		
 	}
@@ -790,7 +835,7 @@ public class AxesElement extends FigureElement {
 		Stroke origStroke = g.getStroke();
 		//	X-axis			
 		g.drawLine(round(graphAreaLeft), round(xAxisPos), round(graphAreaLeft+graphAreaWidth), round(xAxisPos));
-		
+				
 		if (xTickSpacing>0) {
 			
 			//positive x labels & ticks
@@ -803,22 +848,22 @@ public class AxesElement extends FigureElement {
 			
 			double minorTickOffset = tickStep / 2.0;
 			int i=0;
-			int tickX;
-			if (yAxisZero>=graphAreaLeft && yAxisZero < (graphAreaLeft+graphAreaWidth))
-				tickX = round(yAxisZero);
+			double tickX;
+			if (yAxisZero>=graphAreaLeft && yAxisZero < (graphAreaLeft+graphAreaWidth)) {
+				tickX = yAxisZero;
+			}
 			else {
-				tickX = round(graphAreaLeft);
+				tickX = graphAreaLeft;
 			}
 			
 			while(tickStep > 0 && tickX<=round(graphAreaLeft+graphAreaWidth)) {
-				g.drawLine(tickX, round(xAxisPos), tickX, Math.max(round(xAxisPos+2),round(xAxisPos+xTickWidth*yFactor)));
+				int iTickX = round(tickX);
+				g.drawLine(iTickX, round(xAxisPos), iTickX, Math.max(round(xAxisPos+2),round(xAxisPos+xTickWidth*yFactor)));
 				if (drawXGrid && tickX>(graphAreaLeft+1)) {
 					g.setColor(yGridColor);
-					g.drawLine(tickX, round(graphAreaTop), tickX, round(graphAreaBottom));
+					g.drawLine(iTickX, round(graphAreaTop), iTickX, round(graphAreaBottom));
 				}
 			
-				
-				
 				g.setStroke(origStroke);
 				g.setColor(origColor);
 				//Minor tick
@@ -832,41 +877,41 @@ public class AxesElement extends FigureElement {
 					paintXLabel(g, round(tickX), round(graphAreaBottom+xTickWidth*yFactor), i*xLabelStep);
 				}
 				else {
-					if (minXVal>=0) {
-						paintXLabel(g, round(tickX), round(graphAreaBottom+xTickWidth*yFactor), i*xLabelStep+minXVal);
-					}
-					else {
-						paintXLabel(g, round(tickX), round(graphAreaBottom+xTickWidth*yFactor), i*xLabelStep);
-					}
+					double val;
+					if (tickX==yAxisZero)
+						val = 0;
+					else
+						val = figureXtoDataX(tickX);
+					paintXLabel(g, round(tickX), round(graphAreaBottom+xTickWidth*yFactor), val);
 				}
 				i++;
 				tickX += tickStep;
 			}
-		
 			
 			if (minXVal<0) {
 				if (maxXVal>0) //represses drawing two zeros which may not overlap completely
 					i=1;
 				else
 					i=0;
-				tickX = round(yAxisZero-i*tickStep);
+				tickX = yAxisZero-i*tickStep;
 				while(tickX>=graphAreaLeft) {
-					g.drawLine(tickX, round(xAxisPos), tickX, Math.max(round(xAxisPos+2),round(xAxisPos+xTickWidth*yFactor)));
+					int iTickX = round(tickX);
+					g.drawLine(iTickX, round(xAxisPos), iTickX, Math.max(round(xAxisPos+2),round(xAxisPos+xTickWidth*yFactor)));
 					
 					//Minor tick
 					if (round(yAxisZero+i*tickStep-tickStep/2.0) < graphAreaLeft+graphAreaWidth )
 						g.drawLine(round(yAxisZero-i*tickStep+tickStep/2.0), round(xAxisPos), round(yAxisZero-i*tickStep+tickStep/2.0), round(xAxisPos+xTickWidth*yFactor/2.0));
 					
 					if (maxXVal<0) {
-						paintXLabel(g, round(tickX), round(graphAreaBottom+xTickWidth*yFactor), -1.0*i*xLabelStep+minXVal);
+						paintXLabel(g, round(tickX), round(graphAreaBottom+xTickWidth*yFactor), figureXtoDataX(tickX) /*-1.0*i*xLabelStep+minXVal */);
 					}
 					else {
-						paintXLabel(g, round(tickX), round(graphAreaBottom+xTickWidth*yFactor), -1.0*i*xLabelStep);
+						paintXLabel(g, round(tickX), round(graphAreaBottom+xTickWidth*yFactor), figureXtoDataX(tickX));
 
 					}
 
 					i++;
-					tickX = round(yAxisZero-i*tickStep);
+					tickX = yAxisZero-i*tickStep;
 				}
 
 			}
@@ -920,6 +965,12 @@ public class AxesElement extends FigureElement {
 			g.setFont(exponentFont);
 			fm = g.getFontMetrics();
 			Rectangle2D expRect = fm.getStringBounds(expLabel, 0, expLabel.length(), g);
+
+			//Fill rectangle behind label so overlapping labels don't look horrible, just bad
+			g.setColor(parent.getBackground());
+			mantissaRect.setRect(round(xPos-mantissaRect.getWidth()-2), yPos-2, mantissaRect.getWidth(), mantissaRect.getHeight());
+			g.fill(mantissaRect);
+			g.setColor(Color.black);
 			
 			g.setFont(xLabelFont);
 			g.drawString(mantissaLabel, round(xPos-mantissaRect.getWidth()-expRect.getWidth()), round(yPos+mantissaRect.getHeight()/2.0));
@@ -933,6 +984,10 @@ public class AxesElement extends FigureElement {
 			FontMetrics fm = g.getFontMetrics();
 			String label = StringUtilities.format(val); //labelFormatter.format(val);
 			Rectangle2D rect = fm.getStringBounds(label, 0, label.length(), g);
+			rect.setRect(round(xPos-rect.getWidth()), yPos-rect.getHeight()*0.67, rect.getWidth(), rect.getHeight());
+			g.setColor(parent.getBackground());
+			g.fill(rect);
+			g.setColor(Color.black);
 			g.drawString(label, round(xPos-rect.getWidth()), round(yPos+rect.getHeight()/3.0));
 		} //number didn't need to be converted to scientific notation
 
@@ -970,11 +1025,20 @@ public class AxesElement extends FigureElement {
 			fm = g.getFontMetrics();
 			Rectangle2D expRect = fm.getStringBounds(expLabel, 0, expLabel.length(), g);
 			
+			//Fill rectangle behind label so overlapping labels don't look horrible, just bad
+			g.setColor(parent.getBackground());
+			mantissaRect.setRect(round(xPos-mantissaRect.getWidth()/2.0-2), yPos, mantissaRect.getWidth(), mantissaRect.getHeight());
+			g.fill(mantissaRect);
+			g.setColor(Color.black);
+			
+			int xLeft = round(xPos-(mantissaRect.getWidth()+expRect.getWidth())/2.0);
+			int top = round(yPos+mantissaRect.getHeight()/2.0);
+			
 			g.setFont(xLabelFont);
-			g.drawString(mantissaLabel, round(xPos-(mantissaRect.getWidth()+expRect.getWidth())/2.0), round(yPos+mantissaRect.getHeight()));
+			g.drawString(mantissaLabel, xLeft, round(yPos+mantissaRect.getHeight()));
 			
 			g.setFont(exponentFont);
-			g.drawString(expLabel, round(xPos-(mantissaRect.getWidth()+expRect.getWidth())/2.0+mantissaRect.getWidth()), round(yPos+mantissaRect.getHeight()/2.0));
+			g.drawString(expLabel, round(xPos-(mantissaRect.getWidth()+expRect.getWidth())/2.0+mantissaRect.getWidth()), top);
 			return;
 		}
 		else {
@@ -984,6 +1048,10 @@ public class AxesElement extends FigureElement {
 			FontMetrics fm = g.getFontMetrics();
 			String label = StringUtilities.format(val); // labelFormatter.format(val);
 			Rectangle2D rect = fm.getStringBounds(label, 0, label.length(), g);
+			rect.setRect(round(xPos-rect.getWidth()/2.0), yPos, rect.getWidth(), rect.getHeight());
+			g.setColor(parent.getBackground());
+			g.fill(rect);
+			g.setColor(Color.black);
 			g.drawString(label, round(xPos-rect.getWidth()/2.0), round(yPos+rect.getHeight()));
 		}
 		

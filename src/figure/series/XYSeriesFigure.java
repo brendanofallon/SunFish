@@ -13,11 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import figure.ElementList;
-import figure.Figure;
 import figure.FigureElement;
 import figure.TextElement;
 import figure.VerticalTextElement;
-import figure.categorySeries.CatSeriesElement;
 
 /**
  * A versatile figure that displays multiple  "xy" data series, where the data are in the form of an XYSeries.
@@ -54,7 +52,7 @@ public class XYSeriesFigure extends SeriesFigure {
 		yLabelElement.setCanConfigure(true);
 		yLabelElement.setMobile(true);
 		axes = new AxesElement(this);
-		axes.setBounds(0.02, 0.03, 0.9, 0.85);
+		axes.setBounds(0.05, 0.05, 0.86, 0.85);
 		axes.setCanConfigure(true);
 		addMouseListeningElement(axes);
 		//Note that is is probably necessary to have the axes element as first in this list
@@ -84,33 +82,43 @@ public class XYSeriesFigure extends SeriesFigure {
 		colorList[5] = Color.black;
 	}
 	
+	
 	/**
 	 * Informs the axes element of what its data bounds should be
 	 */
 	public void inferBoundsFromCurrentSeries() {
+		inferXBoundsFromSeries();
+		inferYBoundsFromSeries();
+	}
+	
+	/**
+	 * Set boundaries to match the current series, but if the user has already set anything for the x or y axes then
+	 * don't change it
+	 */
+	public void inferBoundsPolitely() {
+		if (! axes.hasUserX) {
+			inferXBoundsFromSeries();
+		}
+		if (! axes.hasUserY) {
+			inferYBoundsFromSeries();
+		}
+	}
+
+	
+	public void inferYBoundsFromSeries() {
 		if (seriesElements.size()==0) {
 			axes.setDataBounds(0, 1, 0, 1);
 		}
 		else {
-			
-			double xmin = seriesElements.get(0).getMinX();
 
-			double xmax = seriesElements.get(0).getMaxX();
 			double ymin = seriesElements.get(0).getMinY();
 			if (ymin > 0)
 				ymin = 0;
 			double ymax = seriesElements.get(0).getMaxY();
+
+			//System.out.println("raw max y is : " + ymax);
 			
-			
-			for(int i=1; i<seriesElements.size(); i++) {
-				double serMaxX = seriesElements.get(i).getMaxX(); 
-				if (serMaxX > xmax)
-					xmax = serMaxX;
-				
-				double serMinX = seriesElements.get(i).getMinX(); 
-				if (serMinX < xmin)
-					xmin = serMinX;
-				
+			for(int i=1; i<seriesElements.size(); i++) {	
 				double serMaxY = seriesElements.get(i).getMaxY(); 
 				if (serMaxY > ymax)
 					ymax = serMaxY;
@@ -124,12 +132,6 @@ public class XYSeriesFigure extends SeriesFigure {
 			if (ymax > 0) 
 				ymax = upperVal(ymax);
 			
-			if (ymin < 0)
-				ymin = lowerVal(ymin);
-			
-			
-			if (xmin>0 && (xmax-xmin)/xmin>3 )
-				xmin = 0;
 			
 			if (ymax == ymin) {
 				if (Math.abs(ymax)<1e-12) {
@@ -141,22 +143,61 @@ public class XYSeriesFigure extends SeriesFigure {
 					ymax *= 1.5;
 				}
 			}
+			
+		//	System.out.println("Upperval max y is : " + ymax);
+			axes.setDataBounds(axes.getXMin(), axes.getXMax(), ymin, ymax);
+			axes.setRationalTicks();
+		}
+	}
+	
+	
+	public void inferXBoundsFromSeries() {
+		if (seriesElements.size()==0) {
+			axes.setDataBounds(0, 1, 0, 1);
+		}
+		else {
+			double xmin = seriesElements.get(0).getMinX();
+			double xmax = seriesElements.get(0).getMaxX();
+			
+			for(int i=1; i<seriesElements.size(); i++) {
+				double serMaxX = seriesElements.get(i).getMaxX(); 
+				if (serMaxX > xmax)
+					xmax = serMaxX;
+				
+				double serMinX = seriesElements.get(i).getMinX(); 
+				if (serMinX < xmin)
+					xmin = serMinX;
+	
+			}
+			
+			if (xmin>0 && (xmax-xmin)/xmin>10 ) {
+				xmin = 0;
+			}
+			
+	
 			if (xmin == xmax) {
 				if (Math.abs(xmin)<1e-12) {
 					xmin = 0;
 					xmax = 0.001;
 				}
 				else {
-					xmin /= 2;
-					xmax *= 1.5;
+					if (xmin < 0)
+						xmin /= -2;
+					else
+						xmin /= 2;
+					if (xmin < 0)
+						xmax *= -1.5;
+					else
+						xmax *= 1.5;
 				}
 			}
 			
-			//System.out.println("Inferring new bounds, ymin: " + ymin + " ymax: " + ymax);
-			axes.setDataBounds(xmin, xmax, ymin, ymax);
+			axes.setDataBounds(xmin, xmax, axes.getYMin(), axes.getYMax());
 			axes.setRationalTicks();
 		}
 	}
+	
+
 	
 	
 	/**
@@ -226,12 +267,30 @@ public class XYSeriesFigure extends SeriesFigure {
 		
 	}
 	
+	public AxesElement getAxes() {
+		return axes;
+	}
+	
+	
 	/**
 	 * Set the distance (in data units) between x ticks on the axes element
 	 * @param spacing
 	 */
 	public void setXTickSpacing(double spacing) {
 		axes.setXTickSpacing(spacing);
+	}
+	
+	/**
+	 * Add / remove the legend element from the figure 
+	 * @param showLegend
+	 */
+	public void setShowLegend(boolean showLegend) {
+		if (showLegend && !elements.contains(legend)) {
+			addElement(legend);
+		}
+		if ( (!showLegend) ) {
+			elements.remove(legend);
+		}
 	}
 	
 	/**
@@ -270,12 +329,24 @@ public class XYSeriesFigure extends SeriesFigure {
 		return seriesElements.size();
 	}
 	
-	public void setXLabel(String label) {
-		xLabelElement.setText(label);
+	public void setXLabel(String label) {		
+		if (label == null)
+			this.elements.remove(xLabelElement);
+		else {
+			if (! elements.contains(xLabelElement))
+				addElement(xLabelElement);
+			xLabelElement.setText(label);
+		}
 	}
 	
 	public void setYLabel(String label) {
-		yLabelElement.setText(label);
+		if (label == null)
+			this.elements.remove(yLabelElement);
+		else {
+			if (! elements.contains(yLabelElement))
+				addElement(yLabelElement);
+			yLabelElement.setText(label);
+		}
 	}
 	
 	/**
@@ -294,7 +365,27 @@ public class XYSeriesFigure extends SeriesFigure {
 		return newElement;
 	}
 	
+	/**
+	 * Add the given XYSeriesElement to the elements plotted in this figure
+	 * @param el
+	 */
+	public void addSeriesElement(XYSeriesElement el) {
+		if (!seriesElements.contains(el)) {
+			seriesElements.add(el);
+			addElement(el);
+		}
+		else {
+			System.err.println("Series list already contain element, not adding it");
+		}
+	}
 	
+	/**
+	 * Sets whether or not mouse dragging causes the selection region to appear in the axes
+	 * @param allowMouseDragSelection
+	 */
+	public void setAllowMouseDragSelection(boolean allowMouseDragSelection) {
+		axes.setAllowMouseDragSelection(allowMouseDragSelection);
+	}
 	
 	
 	public void componentResized(ComponentEvent arg0) {
@@ -311,7 +402,7 @@ public class XYSeriesFigure extends SeriesFigure {
 		double pow = 1;
 		if (x==1)
 			return 1;
-		
+				
 		if (x>1.0) {
 			while(x>1.0) {
 				x /= 10.0;

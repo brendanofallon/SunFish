@@ -1,6 +1,7 @@
 package figure.categorySeries;
 
 import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,21 +17,22 @@ import figure.series.SeriesElement;
 import figure.series.SeriesFigure;
 import figure.series.XYSeries;
 import figure.series.XYSeriesElement;
+import figure.series.XYSeriesFigure;
 
 public class CatSeriesElement extends XYSeriesElement {
 
 	figure.series.CategorySeries data;
 	
-	public CatSeriesElement(SeriesFigure parent, AxesElement axes, CategorySeries data) {
+	public CatSeriesElement(XYSeriesFigure parent, AxesElement axes, CategorySeries data) {
 		super(null, axes, parent);
 		this.data = data;
 		series = data;
 	
 		//Iterator<String> kit = data.getIterator();
-		ArrayList<Point> pointList = new ArrayList<Point>();
+		ArrayList<Point2D> pointList = new ArrayList<Point2D>();
 		int count = 0;
 		for(int i=0; i<data.size(); i++) {
-			pointList.add(new Point(i, data.getDataPoint(i)));		
+			pointList.add(new Point2D.Double(i, data.getDataPoint(i)));		
 		}
 		
 		xySeries = new XYSeries(pointList);

@@ -1,8 +1,5 @@
 package figure.series;
 
-import java.awt.Color;
-import java.util.Iterator;
-
 /**
  * Implements the idea of a named list of points, where the points have a x- and y-labels of some sort. Various 
  * subclasses implement series with double-valued points for ordinal series or string=valued x-values and double-valued
@@ -12,7 +9,6 @@ import java.util.Iterator;
  */
 public abstract class AbstractSeries {
 
-	//Color color;
 	float weight; 
 	String name;
 	
