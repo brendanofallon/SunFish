@@ -389,7 +389,6 @@ public class MultiTreeDisplay extends Display {
 		
 		int sizeIndex = fontSizes.getSelectedIndex();
 		float fontSize = fontSizeChoices[sizeIndex];
-		
 		for(DrawableNode node : nodes) {
 			node.setFontSize(fontSize);
 		}
