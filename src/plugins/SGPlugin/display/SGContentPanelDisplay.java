@@ -1172,7 +1172,7 @@ public class SGContentPanelDisplay extends Display implements UndoableActionSour
         });
 		editingPane.addComponent(exportSelection);
 		
-		CFButton maskColumnsButton = new CFButton("Mask", null);
+		CFButton maskColumnsButton = new CFButton("Mask",  getIcon("maskCols.png"));
 		maskColumnsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
             	maskColumns(evt);

@@ -288,7 +288,7 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
     			if (data instanceof XYSeries) {
     				XYSeries xyData = (XYSeries)data;
     				for(int i=0; i<data.size(); i++)
-    					writer.write(xyData.get(i).x + ",\t" + xyData.get(i).getY() + "\n");
+    					writer.write(xyData.get(i).getX() + ",\t" + xyData.get(i).getY() + "\n");
     			}
     			else {
     				ErrorWindow.showErrorWindow(new IllegalArgumentException("Cannot write non-xy series data (feature not implemented, yet)") );
