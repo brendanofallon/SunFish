@@ -244,6 +244,9 @@ public class DirectoryTreeBlock extends TopLevelTreeBlock {
     		return hasMatches;
     	}
     	
+  
+    	System.out.println("Adding child nodes from file : " + root.getName());
+    	
         File[] files = root.listFiles();
         
         //We first obtain a list of the current children of this node. We don't want to replace these

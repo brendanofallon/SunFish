@@ -180,10 +180,7 @@ public class FileTreeCellRenderer extends DefaultTreeCellRenderer {
 			setForeground(Color.black);	
 			setIcon(null);
 
-			FileParser parser = null;
-			List<FileParser> parsers = parentFrame.getParserList(file);
-			if (parsers.size()>0)
-				parser = parsers.get(0);
+			FileParser parser = wrappedFile.getParser();
 			
 			if (parser!=null) {
 				setForeground(parser.getLabelColor());
@@ -242,20 +239,6 @@ public class FileTreeCellRenderer extends DefaultTreeCellRenderer {
 		if (topLevel) {
 			setFont(topLevelFont);
 			setForeground(Color.DARK_GRAY);
-		
-//			if (expanded) {
-//				if (mouseOver)
-//					setIcon(openHighlightIcon);
-//				else
-//					setIcon(openArrowIcon);
-//			}
-//			else {
-//				if (mouseOver)
-//					setIcon(closedHighlightIcon);
-//				else
-//					setIcon(closedArrowIcon);
-//			}
-
 			setIcon(topLevelIcon); 
 		}
 		

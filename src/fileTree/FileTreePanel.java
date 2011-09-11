@@ -50,6 +50,7 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 
 import topLevelGUI.DirectoryFileFilter;
+import topLevelGUI.FileTree;
 import topLevelGUI.SunFishFrame;
 
 import display.DisplayData;
@@ -68,7 +69,7 @@ import guiWidgets.IconButton;
  * @author brendan
  *
  */
-public class FileTreePanel extends JPanel {
+public class FileTreePanel extends JPanel implements FileTree {
 
 	SunFishFrame sunfishParent;
 	Logger logger;
@@ -100,10 +101,6 @@ public class FileTreePanel extends JPanel {
 		initializeComponents();
 		
         initializeBlocks();
-       
-        HighlightListener hl = new HighlightListener();
-        treeScrollPane.addMouseMotionListener(hl);
-        treeScrollPane.addMouseListener(hl);
 	}
 	
 	/**
@@ -454,6 +451,13 @@ public class FileTreePanel extends JPanel {
 			sunfishParent.displayFile(file);
 		}	
 	}
+	
+	@Override
+	public void reloadParserInfo() {
+		for (TopLevelTreeBlock tlBlock : topLevelBlocks) {
+			tlBlock.reloadParserInfo();
+		}
+	}
 
 	/**
 	 * Make it so the first click to the tree search field erases the text
@@ -508,30 +512,13 @@ public class FileTreePanel extends JPanel {
 		return paths;
 	}
 	
-	class HighlightListener extends MouseAdapter {
-		
-//		public void mouseMoved(MouseEvent me) {
-//			for(TopLevelTreeBlock tlBlock : topLevelBlocks) {
-//				tlBlock.setHighlight(false);
-//				
-//			}
-//		}
-
-		@Override
-		public void mouseEntered(MouseEvent arg0) {
-			for(TopLevelTreeBlock tlBlock : topLevelBlocks) {
-				tlBlock.setHighlight(false);
-			}
-		}
-
-		
-	}
-	
 	
 	JPanel topLevelPanel;
     private javax.swing.JScrollPane treeScrollPane;
     private javax.swing.JTextField treeSearchField;
     private IconButton addFolderButton;
     private IconButton treeChangeButton;
+
+	
     
 }

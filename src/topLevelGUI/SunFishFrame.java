@@ -46,6 +46,8 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.WindowConstants;
 import javax.swing.text.DefaultEditorKit;
 
+import newfiletree.NewFileTree;
+
 import sunfish.SunFishApp;
 import topLevelGUI.analyzer.AnalysisPane;
 import topLevelGUI.analyzer.Analyzable;
@@ -724,7 +726,7 @@ public class SunFishFrame extends JFrame {
 		return analysisPane;
 	}
 	
-	public FileTreePanel getFileTreePanel() {
+	public FileTree getFileTreePanel() {
 		return fileTreePanel;
 	}
 	
@@ -1037,6 +1039,14 @@ public class SunFishFrame extends JFrame {
 			}
 		}
 	}
+	
+	/**
+	 * Reloads parser information in the file tree. This should be called whenever parsers
+	 * are loaded / removed so the file tree info will be up to date
+	 */
+	public void associateParsers() {
+		fileTreePanel.reloadParserInfo();
+	}
 
 	/**
 	 * Create the various GUI components.. this should be generalized at some point
@@ -1063,7 +1073,14 @@ public class SunFishFrame extends JFrame {
         
         outerSplitPane.setDividerLocation(panelWidth);
         
-        outerSplitPane.setLeftComponent(fileTreePanel);
+        try {
+        	outerSplitPane.setLeftComponent((Component)fileTreePanel);
+        }
+        catch (Exception ex) {
+        	//Some implementations of fileTree may not be components, which I guess we permit 
+        	//for now
+        }
+        
         outerSplitPane.setRightComponent(rightSplitPane);
         outerSplitPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
         
@@ -1169,12 +1186,13 @@ public class SunFishFrame extends JFrame {
 	private javax.swing.JMenu fileMenu;
 	private javax.swing.JMenu editMenu;
 	private javax.swing.JMenuBar jMenuBar1;
-    private FileTreePanel fileTreePanel;
+    private FileTree fileTreePanel;
     private javax.swing.JSplitPane outerSplitPane;
     private javax.swing.JMenuItem quitMenuItem;
     private javax.swing.JSplitPane rightSplitPane;
     JFileChooser fileChooser;
 
     private JDialog aboutBox;
+
 
 }

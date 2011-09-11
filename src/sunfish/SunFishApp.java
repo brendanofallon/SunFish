@@ -156,10 +156,12 @@ public class SunFishApp {
     		//Attempt to load properties ..
     		Properties defaultProps = loadDefaultProperties();
     		Properties userProps = loadUserProperties(defaultProps);
+    		sunfishApp = this;
     		sunfish = new SunFishFrame(logger, userProps);
     		loadPlugins(sunfish);
+    		sunfish.associateParsers();
     		sunfish.setVisible(true);
-    		sunfishApp = this;
+    		
     		sunfish.reopenFiles();
     	}
     	catch (Exception ex) {

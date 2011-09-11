@@ -200,25 +200,45 @@ public abstract class TopLevelTreeBlock extends TLBPanel {
 		repaint();	
 	}
 	
+	public void reloadParserInfo() {
+		reloadParserInfo(rootNode);
+	}
+	
+	/**
+	 * Recursively traverse all children from the given node and call loadFileAttributes on them.
+	 * @param treeNode
+	 */
+	private void reloadParserInfo(TreeNode treeNode) {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treeNode;
+		Object userObj = node.getUserObject();
+		if (userObj != null && userObj instanceof TreeFile) {
+			TreeFile treeFile = (TreeFile)userObj;
+			treeFile.loadFileAttributes();
+		}
+		
+		for(int i=0; i<node.getChildCount(); i++) {
+			reloadParserInfo( node.getChildAt(i));
+		}
+		
+	}
+	
 	/**
 	 * Cause the tree panel to be highlighted, or not
 	 * @param highlight
 	 */
-	public void setHighlight(boolean highlight) {
-		//treePanel.setHighlight(highlight && rootNode.getChildCount()>0);
-	}
+//	public void setHighlight(boolean highlight) { }
 	
 	public void treeMouseClicked(java.awt.event.MouseEvent e) {
         int selRow = tree.getRowForLocation(this.getWidth()/2, e.getY());
         TreePath selPath = tree.getPathForRow(selRow);
 
-        System.out.println("\n\nMouse clicked on row : " + selRow);
-        if (selPath == null) {
-        	System.out.println(".. but there is no selected path.");
-        }
-        else {
-        	System.out.println(" * And there is a selected path");
-        }
+//        System.out.println("\n\nMouse clicked on row : " + selRow);
+//        if (selPath == null) {
+//        	System.out.println(".. but there is no selected path.");
+//        }
+//        else {
+//        	System.out.println(" * And there is a selected path");
+//        }
         
         //New strategy: Never tell the tree to expand or collapse. Just listen for events and attempt
         //to calculate how big the tree is
@@ -306,20 +326,9 @@ public abstract class TopLevelTreeBlock extends TLBPanel {
 	        maybeShowPopup(e);
 	    }
 	    
-	    public void mouseExited(MouseEvent e) {
-	    //	mouseOverRow = -1;
-	    //	repaint();
-	    }
+	    public void mouseExited(MouseEvent e) {	    }
 	    
-	    public void mouseMoved(MouseEvent e) {
-//	    	mousePos = e.getPoint();
-//	    	
-//	    	int row = tree.getRowForLocation((int)mousePos.getX(), (int)mousePos.getY());
-//	    	if (row != mouseOverRow) {
-//	    		mouseOverRow = row;
-//	    		tree.repaint();
-//	    	}
-	    }
+	    public void mouseMoved(MouseEvent e) {	    }
 
 	    private void maybeShowPopup(MouseEvent e) {
 	        if (e.isPopupTrigger()) {
@@ -332,5 +341,7 @@ public abstract class TopLevelTreeBlock extends TLBPanel {
 	
 	
 	JPopupMenu popup;
+
+	
 
 }
