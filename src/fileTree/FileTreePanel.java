@@ -59,7 +59,8 @@ import guiWidgets.IconButton;
 
 
 /**
- * The panel which manages the list of files. Currently, the scheme is that a number of
+ * The panel which manages the a collection of lists of files, usually displayed on the left edge
+ * of the main application window. Currently, the scheme is that a number of
  * 'top level blocks' exist, each of which is a jpanel and presents its own sub-display.
  * Subclasses of TopLevelTreeBlock implement different kinds of things to display, for 
  * instance, a directory in the file system, or the list of recent files (or a remote 
@@ -208,6 +209,7 @@ public class FileTreePanel extends JPanel {
 		topLevelPanel.add(glueBox);
 		
 		topLevelPanel.revalidate();
+		topLevelPanel.repaint();
 		repaint();
 	}
 	
@@ -345,7 +347,6 @@ public class FileTreePanel extends JPanel {
 		addFolderButton.setMaximumSize(new Dimension(29, 29) );
         addFolderButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                //treeReloadButtonActionPerformed(evt);
             	addFolderAction();
             }
         });
