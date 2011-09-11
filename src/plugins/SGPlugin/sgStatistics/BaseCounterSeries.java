@@ -1,8 +1,8 @@
 package plugins.SGPlugin.sgStatistics;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
-import element.Point;
 import element.sequence.*;
 import figure.series.XYSeries;
 
@@ -19,18 +19,18 @@ public class BaseCounterSeries extends XYSeries {
 	BaseCounter calculator;
 	int partitionIndex = -1; //The partition to which we're assigned, if any. -1 indicates none.
 
-	public BaseCounterSeries(ArrayList<Point> points, BaseCounter calc) {
+	public BaseCounterSeries(ArrayList<Point2D> points, BaseCounter calc) {
 		super(points);
 		this.calculator = calc;
 	}
 	
-	public BaseCounterSeries(ArrayList<Point> points, BaseCounter calc, int pIndex) {
+	public BaseCounterSeries(ArrayList<Point2D> points, BaseCounter calc, int pIndex) {
 		super(points);
 		this.calculator = calc;
 		this.partitionIndex = pIndex;
 	}
 	
-	public BaseCounterSeries(ArrayList<Point> points, String name, BaseCounter calc) {
+	public BaseCounterSeries(ArrayList<Point2D> points, String name, BaseCounter calc) {
 		super(points, name);
 		this.calculator = calc;
 	}
@@ -59,7 +59,7 @@ public class BaseCounterSeries extends XYSeries {
 		return calculator;
 	}
 
-	public void replaceSeries(ArrayList<Point> points) {
+	public void replaceSeries(ArrayList<Point2D> points) {
 		constructPointsFromList(points);
 	}
 	

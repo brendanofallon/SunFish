@@ -567,6 +567,24 @@ public class SGContentPanelDisplay extends Display implements UndoableActionSour
 		contentPane.setSequenceGroup(currentSG);
 	}
 	
+	protected void maskColumns(ActionEvent evt) {
+		if (getNumSelectedColumns()==0) {
+			SunFishFrame.getSunFishFrame().setInfoLabelText("No columns selected");
+			return;
+		}
+		
+		SequenceGroup sgBefore = currentSG.clone();
+		SGUndoableAction maskAction = new SGUndoableAction(this, sgBefore, hasUnsavedChanges(), "Mask columns");
+		
+		int[] cols = contentPane.getSelectedColumns();
+		currentSG.maskColumns(cols);
+
+		
+		undoManager.postNewAction(maskAction);
+		contentPane.setSequenceGroup(currentSG);
+	}
+	
+	
 	public void selectRows(String rowSelectionType, String rowMatchingType, String pattern) {
     	contentPane.clearSelection();
 		//System.out.println("Got type : " + rowSelectionType + " matching: " + rowMatchingType + " pattern: " + pattern);
@@ -1154,7 +1172,16 @@ public class SGContentPanelDisplay extends Display implements UndoableActionSour
         });
 		editingPane.addComponent(exportSelection);
 		
-
+		CFButton maskColumnsButton = new CFButton("Mask",  getIcon("maskCols.png"));
+		maskColumnsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            	maskColumns(evt);
+            }
+        });
+		editingPane.addComponent(maskColumnsButton);
+		
+			
+		
         
         
         dropPane.addPanel("Options", optionsPane);
@@ -1263,6 +1290,8 @@ public class SGContentPanelDisplay extends Display implements UndoableActionSour
 		PopupListener popupListener = new PopupListener(); 
 		contentPane.addMouseListener(popupListener);
 	}
+
+
 
 	/**
 	 * Attempt to add this sequenceGroup to the current analyzer through use of the 

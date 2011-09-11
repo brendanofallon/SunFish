@@ -35,7 +35,7 @@ public class RowFigure extends figure.Figure {
 	
 	public void listHeights() {
 		for(int i=0; i<rows.size(); i++) {
-			System.out.println("Row : " + i + " y: " + rows.get(i).getBounds().y + " height: " + rows.get(i).getBounds().height);
+			System.out.println("Row : " + i + " y: " + rows.get(i).getBounds().getY() + " height: " + rows.get(i).getBounds().getHeight());
 		}
 		System.out.println("Figure width: " + this.getWidth() + " height: " + this.getHeight());
 	}

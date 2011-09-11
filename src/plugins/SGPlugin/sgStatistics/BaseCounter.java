@@ -1,11 +1,9 @@
 package plugins.SGPlugin.sgStatistics;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
-import figure.series.XYSeries;
-import element.Point;
 import element.sequence.*;
-import element.sequence.Sequence;
 import errorHandling.ErrorWindow;
 
 /**
@@ -137,11 +135,11 @@ public abstract class BaseCounter implements SGCalculator {
 	 * @param stepSize
 	 * @return
 	 */
-	public ArrayList<Point> getWindowPointSeries(int windowSize, int stepSize) {
-		ArrayList<element.Point> points = new ArrayList<element.Point>();
+	public ArrayList<Point2D> getWindowPointSeries(int windowSize, int stepSize) {
+		ArrayList<Point2D> points = new ArrayList<Point2D>();
 
 		for(int i=0; i+windowSize < sg.getMaxSeqLength(); i+=stepSize) {
-			points.add(new Point(i, getValueRange(i, windowSize)));
+			points.add(new Point2D.Double(i, getValueRange(i, windowSize)));
 		}
 		
 		return points;
@@ -159,8 +157,8 @@ public abstract class BaseCounter implements SGCalculator {
 	 * @param partitionIndex The partition to calculate the value for
 	 * @return
 	 */
-	public ArrayList<Point> getWindowPointSeries(int windowSize, int stepSize, int partitionIndex) {
-		ArrayList<element.Point> points = new ArrayList<element.Point>();
+	public ArrayList<Point2D> getWindowPointSeries(int windowSize, int stepSize, int partitionIndex) {
+		ArrayList<Point2D> points = new ArrayList<Point2D>();
 
 		for(int i=0; i+windowSize < sg.getMaxSeqLength(); i+=stepSize) {
 			double xValue = i;
@@ -175,7 +173,7 @@ public abstract class BaseCounter implements SGCalculator {
 					yValue = Double.NaN;
 			}
 			
-			points.add(new Point(xValue, yValue));
+			points.add(new Point2D.Double(xValue, yValue));
 		}
 		
 		return points;
@@ -193,7 +191,7 @@ public abstract class BaseCounter implements SGCalculator {
 	 */	
 	public BaseCounterSeries getWindowSeries(int windowSize, int stepSize) {
 		BaseCounterSeries ser;
-		ArrayList<Point> points = getWindowPointSeries(windowSize, stepSize);
+		ArrayList<Point2D> points = getWindowPointSeries(windowSize, stepSize);
 		
 		ser = new BaseCounterSeries(points, getName(), this);
 		return ser;
@@ -210,7 +208,7 @@ public abstract class BaseCounter implements SGCalculator {
 	 */
 	public BaseCounterSeries getWindowSeries(int windowSize, int stepSize, int partitionIndex) {
 		BaseCounterSeries ser;
-		ArrayList<Point> points = getWindowPointSeries(windowSize, stepSize, partitionIndex);
+		ArrayList<Point2D> points = getWindowPointSeries(windowSize, stepSize, partitionIndex);
 		
 		ser = new BaseCounterSeries(points, getName(), this);
 		return ser;
@@ -226,6 +224,7 @@ public abstract class BaseCounter implements SGCalculator {
 	public boolean isPolymorphic(int site) {
 		if (sg.size()==0)
 			return false;
+		
 		char base = sg.get(0).at(site);
 		int seqNum = 0;
 		while (seqNum < sg.size() && charIsGap(base) ) {
@@ -253,7 +252,7 @@ public abstract class BaseCounter implements SGCalculator {
 	 * @return
 	 */
 	public static boolean charIsGap(char base) {
-		return (base == Sequence.GAP);
+		return (base == Sequence.GAP) || (base == Sequence.UNKNOWN);
 	}
 	
 	/**

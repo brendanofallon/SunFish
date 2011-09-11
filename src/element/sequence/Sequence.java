@@ -10,9 +10,8 @@ import java.util.*;
 import element.sequence.Sequence;
 import element.sequence.SequenceChangeListener.SequenceEventType;
 /**
- * A string of characters that can be interpreted as a DNA or RNA sequence. This should probably be rehashed
- * at some point - it's weird to have everything be a String. An array of Bases may make more sense. At some
- * point we also need move to a derived structure to provide RNA and protein functionality. 
+ * A string of characters that can be interpreted as a DNA or RNA sequence.  Derived classes can implement
+ * storage in different ways, but currently everything is done with Strings  
  * @author brendan
  */
 public abstract class Sequence {
@@ -203,6 +202,46 @@ public abstract class Sequence {
          */
         public abstract void replaceMatchingChars(String lookupSeq, char matchChar);
 
+        /**
+         * Set the symbol at the given index to be that given
+         * @param index
+         * @param symbol
+         */
+        public void setCharAt(int index, char symbol) {
+        	setCharsAt(new int[]{index}, symbol);
+        }
+        
+        /**
+         * Set the symbol at all of the given indices to to be the symbol provided
+         * @param index
+         * @param symbol
+         */
+        public abstract void setCharsAt(int[] indices, char symbol);
+        
+        
+        
+        /**
+         * Convert all symbols at the given column indices to be Sequence.UNKNOWN
+         * @param columIndices
+         * @param fireEvent If true, fire a sequence change event to all listeners
+         */
+        public void maskColumns(int[] columnIndices, boolean fireEvent) {
+        	setCharsAt(columnIndices, Sequence.UNKNOWN);
+        	 
+        	if (fireEvent) 
+        		fireSequenceChangeEvent(SequenceEventType.DATA_CHANGE);
+        }
+        
+        /**
+         * Convert all symbols at the given column indices to be Sequence.UNKNOWN and 
+         * fire a sequence change event
+         * @param columIndices
+         */
+        public void maskColumns(int[] columnIndices) {
+        	maskColumns(columnIndices, true);
+        }
+        
+        
         /**
          * Returns a new sequence whose seq string is the substring starting at site begin and ending at site end-1.
          * @param begin Start site

@@ -7,8 +7,8 @@ package plugins.SGPlugin.analyzer;
 
 import element.DoneListener;
 import element.LabelledNumber;
-import element.Point;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -268,7 +268,7 @@ public class SequenceGroupCalculator {
 	
 	public XYSeries getSWindowSeries(int windowSize, int stepSize) {
 		XYSeries ser;
-		ArrayList<Point> vals = new ArrayList<Point>();
+		ArrayList<Point2D> vals = new ArrayList<Point2D>();
 		
 		boolean[] polyArr = getPolyArray();
 		for(int i=0; i+windowSize<seqs.getMaxSeqLength(); i+=stepSize) {
@@ -282,7 +282,7 @@ public class SequenceGroupCalculator {
 
 			percentS /= totalSites;
 			
-			vals.add(new Point((double)i, percentS));
+			vals.add(new Point2D.Double((double)i, percentS));
 		}
 		
 		ser = new XYSeries(vals, "Fraction Sites Segregating");
@@ -292,10 +292,10 @@ public class SequenceGroupCalculator {
 	public XYSeries getGCWindowSeries(int windowSize, int windowStep) {
 		int i;
 		XYSeries ser;
-		ArrayList<Point> vals = new ArrayList<Point>();
+		ArrayList<Point2D> vals = new ArrayList<Point2D>();
 		for(i=0; i+windowSize<=seqs.getMaxSeqLength(); i+=windowStep) {
 			double[] freqs = getWindowBaseFreqs(i, windowSize);
-			vals.add(new Point((double)i, freqs[1]+freqs[3]));
+			vals.add(new Point2D.Double((double)i, freqs[1]+freqs[3]));
 		}
 		
 		ser = new XYSeries(vals, "GC Bias");
@@ -335,7 +335,7 @@ public class SequenceGroupCalculator {
 
 	public XYSeries getPiWindowSeries(int windowSize, int stepSize) {
 		XYSeries ser;
-		ArrayList<Point> vals = new ArrayList<Point>();
+		ArrayList<Point2D> vals = new ArrayList<Point2D>();
 		double[] piArr = new double[seqs.getMaxSeqLength()];
 	
 		for(int i=0; i<seqs.getMaxSeqLength(); i++)
@@ -347,7 +347,7 @@ public class SequenceGroupCalculator {
 				tot += piArr[j];
 			
 			tot = tot/(double)windowSize;
-			vals.add(new Point((double)i, tot));
+			vals.add(new Point2D.Double((double)i, tot));
 		}
 		
 //		for(int i=0; i+windowSize<seqs.getMaxSeqLength(); i+=stepSize) {
@@ -440,7 +440,7 @@ public class SequenceGroupCalculator {
 	
 	public XYSeries getTajimasDWindowSeries(int windowSize, int windowStep) {
 		int i;
-		ArrayList<Point> tdSeries = new ArrayList<Point>();
+		ArrayList<Point2D> tdSeries = new ArrayList<Point2D>();
 		
 		double[] piArr = new double[seqs.getMaxSeqLength()];
 		for(i=0; i<seqs.getMaxSeqLength(); i++)
@@ -478,7 +478,7 @@ public class SequenceGroupCalculator {
 			//** SHOULD S AND PI BE ABSOLUTE OR PER SITE INVESTIGATED? **// 
 			double theta_s = S/a1;
 			double D = (pi/windowSize-theta_s)/(e1*S + e2*S*(S-1.0));
-			tdSeries.add(new Point(i, D));
+			tdSeries.add(new Point2D.Double(i, D));
 		}
 
 		XYSeries ser = new XYSeries(tdSeries, "Tajima's D");
@@ -652,9 +652,9 @@ public class SequenceGroupCalculator {
 	 */
 	public XYSeries getFoldedAlleleSpectrumExAsSeries(double theta) {
 		double[] spec = getFoldedAlleleSpectrumEx(theta);
-		ArrayList<element.Point> ser = new ArrayList<element.Point>();
+		ArrayList<Point2D> ser = new ArrayList<Point2D>();
 		for(int i=1; i<spec.length; i++)
-			ser.add(new element.Point(i, spec[i]));
+			ser.add(new Point2D.Double(i, spec[i]));
 		
 		XYSeries cData = new XYSeries(ser);
 		return cData;
@@ -667,9 +667,9 @@ public class SequenceGroupCalculator {
 	 */
 	public XYSeries getUnfoldedAlleleSpectrumExAsSeries(double theta) {
 		double[] spec = getUnfoldedAlleleSpectrumEx(theta);
-		ArrayList<element.Point> ser = new ArrayList<element.Point>();
+		ArrayList<Point2D> ser = new ArrayList<Point2D>();
 		for(int i=1; i<spec.length; i++)
-			ser.add(new element.Point(i, spec[i]));
+			ser.add(new Point2D.Double(i, spec[i]));
 		
 		XYSeries cData = new XYSeries(ser);
 		return cData;
@@ -678,9 +678,9 @@ public class SequenceGroupCalculator {
 	public XYSeries getFoldedAlleleFreqSpectrumAsSeries() {
 		int[] spec = getFoldedAlleleFreqSpectrum();
 		
-		ArrayList<element.Point> ser = new ArrayList<element.Point>();
+		ArrayList<Point2D> ser = new ArrayList<Point2D>();
 		for(int i=1; i<spec.length; i++)
-			ser.add(new element.Point(i, spec[i]));
+			ser.add(new Point2D.Double(i, spec[i]));
 		
 		XYSeries cData = new XYSeries(ser);
 		return cData;
@@ -689,9 +689,9 @@ public class SequenceGroupCalculator {
 	public XYSeries getUnfoldedAlleleFreqSpectrumAsSeries(Sequence ancSeq) {
 		int[] spec = getUnfoldedAlleleFreqSpectrum(ancSeq);
 		
-		ArrayList<element.Point> ser = new ArrayList<element.Point>();
+		ArrayList<Point2D> ser = new ArrayList<Point2D>();
 		for(int i=1; i<spec.length; i++)
-			ser.add(new element.Point(i, spec[i]));
+			ser.add(new Point2D.Double(i, spec[i]));
 		
 		XYSeries cData = new XYSeries(ser);
 		return cData;
@@ -743,7 +743,7 @@ public class SequenceGroupCalculator {
 	 * @return
 	 */
 	public XYSeries getPairwiseDifsDistribution() {
-		ArrayList<element.Point> ser = new ArrayList<element.Point>();
+		ArrayList<Point2D> ser = new ArrayList<Point2D>();
 		int count = 0;
 		int total = seqs.size()*(seqs.size()-1)/2;
 		int step = total/10+1;
@@ -767,7 +767,7 @@ public class SequenceGroupCalculator {
 			
 		
 		for(int i=lowerCutoff; i<=upperCutoff; i++) {
-			ser.add(new element.Point(i, hist[i]));
+			ser.add(new Point2D.Double(i, hist[i]));
 		}
 		XYSeries cData = new XYSeries(ser);
 
@@ -904,7 +904,7 @@ public class SequenceGroupCalculator {
            
             setProgress(0);
 
-            ArrayList<element.Point> ser = new ArrayList<element.Point>();
+            ArrayList<Point2D> ser = new ArrayList<Point2D>();
             int count = 0;
             int total = seqs.size()*(seqs.size()-1)/2;
             int step = total/10+1;
@@ -929,7 +929,7 @@ public class SequenceGroupCalculator {
 
 
             for(int i=lowerCutoff; i<=upperCutoff; i++) {
-            	ser.add(new element.Point(i, hist[i]));
+            	ser.add(new Point2D.Double(i, hist[i]));
             }
 
             setProgress(Math.min(100, 100*count/total));

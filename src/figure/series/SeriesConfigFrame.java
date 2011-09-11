@@ -1,18 +1,15 @@
 package figure.series;
 
+
+import guiWidgets.ColorSwatchButton;
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
-import javax.swing.JComboBox;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
-import figure.Figure;
-import guiWidgets.ColorSwatchButton;
-
 
 /**
  * A frame that allows the user to adjust some properties of the series. 
@@ -22,12 +19,13 @@ import guiWidgets.ColorSwatchButton;
 public class SeriesConfigFrame extends javax.swing.JFrame {
 
 		XYSeriesElement seriesOwner;
-		SeriesFigure parent;
+		XYSeriesFigure parent;
 		
 		SeriesOptions initialOptions = null;
 		
-	    public SeriesConfigFrame(XYSeriesElement ser, SeriesFigure parent) {
+	    public SeriesConfigFrame(XYSeriesElement ser, XYSeriesFigure parent) {
 	        this.seriesOwner = ser;
+	        
 	        this.parent = parent;
 	        
 	        initComponents();
@@ -211,6 +209,7 @@ public class SeriesConfigFrame extends javax.swing.JFrame {
 	    
 	    protected void removeButtonActionPerformed(ActionEvent evt) {
 			parent.removeSeries(seriesOwner.getSeries());
+			parent.inferBoundsPolitely();
 			doneButtonActionPerformed(null);
 			repaint();
 		}

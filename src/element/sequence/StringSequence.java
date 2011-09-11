@@ -184,7 +184,16 @@ public class StringSequence extends Sequence {
     	return new StringSequence(newStr.toString(), name);
     }
 
-    
+
+	
+	public void setCharsAt(int[] indices, char symbol) {
+		char[] chars = seq.toCharArray();
+		for(int i=0; i<indices.length; i++)
+			chars[indices[i]] = symbol;
+		seq = new String(chars);
+	}
+	
+	
     
   //Returns the next index in this sequence that is *not* in cols
     private int nextCharacter(int marker, int[] cols) {
@@ -206,6 +215,8 @@ public class StringSequence extends Sequence {
     	}
     	return marker;
     }
+
+
 
 
 

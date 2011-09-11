@@ -1,5 +1,6 @@
 package plugins.argPlugin.arg.argStats;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import plugins.argPlugin.arg.ARG;
@@ -13,7 +14,7 @@ public class MaxHeight extends ARGStat {
 
 	@Override
 	public XYSeries computeSeries(ARG arg) {
-		ArrayList<Point> points = new ArrayList<Point>();
+		ArrayList<Point2D> points = new ArrayList<Point2D>();
 		
 		int steps = arg.getMaxSite() / stepSize;
 		if (steps < 50)
@@ -27,7 +28,7 @@ public class MaxHeight extends ARGStat {
 		for(int site=arg.getMinSite(); site<arg.getMaxSite(); site+=stepSize) {
 			Range siteRange = arg.getRangeForSite(site);
 			if (range == siteRange) {
-				points.add(new Point(site, mrcaHeight));	
+				points.add(new Point2D.Double(site, mrcaHeight));	
 			}
 			else {
 				range = siteRange;

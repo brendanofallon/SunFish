@@ -18,6 +18,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -51,7 +52,7 @@ public abstract class Figure extends JPanel implements ComponentListener, KeyLis
 	int currentX = 0;
 	int currentY = 0;
 	java.awt.Point mousePos;	//The mouse position in java.awt.coordinate (integer)terms
-	element.Point mousePosFigure; //The mouse position in figure (0..1) terms
+	Point2D mousePosFigure; //The mouse position in figure (0..1) terms
 	protected FigureMouseListener mouseListener;
 	
 	//When true, painting begins with drawing a white rectangle over everything.
@@ -98,7 +99,7 @@ public abstract class Figure extends JPanel implements ComponentListener, KeyLis
 		addKeyListener(this);
 		this.setFocusTraversalKeysEnabled(false);
 		mouseListeningElements = new ArrayList<FigureElement>();
-		mousePosFigure = new element.Point(0,0);
+		mousePosFigure = new Point2D.Double(0,0);
 		selectRect = new Rectangle(0, 0, 0, 0);
 		prevRect = new Rectangle(0, 0, 0, 0);
 		if (clickTimer == null) {
@@ -106,7 +107,23 @@ public abstract class Figure extends JPanel implements ComponentListener, KeyLis
 			clickTimer = new Timer(200, timerListener);
 			clickTimer.setInitialDelay(200);
 		}
+		super.setBackground(backgroundColor);
 	}	
+	
+	/**
+	 * Obtain the background color of this figure
+	 */
+	public Color getBackground() {
+		return backgroundColor;
+	}
+	
+	/**
+	 * Set the background color of this Figure
+	 */
+	public void setBackground(Color color) {
+		super.setBackground(color);
+		this.backgroundColor = color;
+	}
 	
 	/**
 	 * Add a new element to the list of FigureELements
@@ -545,8 +562,7 @@ public abstract class Figure extends JPanel implements ComponentListener, KeyLis
 			mouseBegin.width = arg0.getX();
 			mouseBegin.height = arg0.getY();
 			
-			mousePosFigure.x = arg0.getX()/(double)getWidth();
-			mousePosFigure.y = arg0.getY()/(double)getHeight();
+			mousePosFigure.setLocation(arg0.getX()/(double)getWidth(), arg0.getY()/(double)getHeight());
 			for(FigureElement el : mouseListeningElements) {
 				el.mousePressed(mousePosFigure);
 			}
@@ -559,8 +575,7 @@ public abstract class Figure extends JPanel implements ComponentListener, KeyLis
 			mouseDrag = false;
 			dragStart = null;
 			
-			mousePosFigure.x = arg0.getX()/(double)getWidth();
-			mousePosFigure.y = arg0.getY()/(double)getHeight();
+			mousePosFigure.setLocation(arg0.getX()/(double)getWidth(), arg0.getY()/(double)getHeight());
 			for(FigureElement el : mouseListeningElements) {
 				el.mouseReleased(mousePosFigure);
 			}
@@ -633,8 +648,7 @@ public abstract class Figure extends JPanel implements ComponentListener, KeyLis
 			//elements; the reasoning being that we don't want a bunch of other things to happen (like selection regions)
 			//to be drawn if an element is being dragged around. This may change. 
 			if (!moved) {
-				mousePosFigure.x = arg0.getX()/(double)getWidth();
-				mousePosFigure.y = arg0.getY()/(double)getHeight();
+				mousePosFigure.setLocation(arg0.getX()/(double)getWidth(), arg0.getY()/(double)getHeight());
 				for(FigureElement el : mouseListeningElements) {
 					el.mouseDragged(mousePosFigure);
 				}
@@ -650,8 +664,7 @@ public abstract class Figure extends JPanel implements ComponentListener, KeyLis
 		 */
 		public void mouseMoved(MouseEvent arg0) {
 			mousePos = arg0.getPoint();
-			mousePosFigure.x = mousePos.x/(double)getWidth();
-			mousePosFigure.y = mousePos.y/(double)getHeight();
+			mousePosFigure.setLocation(mousePos.x/(double)getWidth(),  mousePos.y/(double)getHeight());
 			
 			for(FigureElement el : mouseListeningElements) {
 				el.mouseMoved(mousePosFigure);

@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -16,6 +17,8 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
 import figure.Figure;
+import guiWidgets.StringUtilities;
+
 
 public class AxesConfigFrame extends JFrame {
 
@@ -35,6 +38,8 @@ public class AxesConfigFrame extends JFrame {
 	
 	JCheckBox gridLinesBox;
 	
+	JSpinner fontSizeSpinner;
+	
 	JTextField tickXField;
 	JTextField maxXField;
 	JTextField minXField;
@@ -51,19 +56,25 @@ public class AxesConfigFrame extends JFrame {
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 		this.add(mainPanel);
-		mainPanel.setPreferredSize(new Dimension(200, 205));
-		setPreferredSize(new Dimension(200, 205) );
+		mainPanel.setPreferredSize(new Dimension(300, 205));
+		setPreferredSize(new Dimension(300, 205) );
 		
 		panel1 = new JPanel();
 		panel1.setLayout(new FlowLayout(FlowLayout.LEFT));
-		maxXField = new JTextField();
+		maxXField = new JTextField("XXXXXX");
+		maxXField.setMinimumSize(new Dimension(100, 10));
+		maxXField.setPreferredSize(new Dimension(100, 30));
+		maxXField.setMaximumSize(new Dimension(100, 55));
 		panel1.add(maxXField);
 		panel1.add(new JLabel("Maximum value"));
 		mainPanel.add(panel1);
 		
 		panel2 = new JPanel();
 		panel2.setLayout(new FlowLayout(FlowLayout.LEFT));
-		minXField = new JTextField();
+		minXField = new JTextField("XXXXXX");
+		minXField.setMinimumSize(new Dimension(100, 10));
+		minXField.setPreferredSize(new Dimension(100, 30));
+		minXField.setMaximumSize(new Dimension(100, 55));
 		panel2.add(minXField);
 		panel2.add(new JLabel("Minimum value"));
 		mainPanel.add(panel2);
@@ -76,15 +87,24 @@ public class AxesConfigFrame extends JFrame {
 		mainPanel.add(panel25);
 		
 		panel3 = new JPanel();
-		//SpinnerModel model = new SpinnerNumberModel(5, 0, 50, 1 );
 		tickXField = new JTextField();
 		
-		tickXField.setMinimumSize(new Dimension(65, 1));
-		tickXField.setPreferredSize(new Dimension(65, 24));
+		tickXField.setMinimumSize(new Dimension(75, 1));
+		tickXField.setPreferredSize(new Dimension(75, 30));
 		panel3.setLayout(new FlowLayout(FlowLayout.LEFT));
 		panel3.add(tickXField);
 		panel3.add(new JLabel("X tick spacing"));
 		mainPanel.add(panel3);
+		
+		
+
+		SpinnerModel model = new SpinnerNumberModel(11, 0, 50, 1 );
+		fontSizeSpinner = new JSpinner(model);
+		JPanel panel35 = new JPanel();
+		panel35.setLayout(new FlowLayout(FlowLayout.LEFT));
+		panel35.add(fontSizeSpinner);
+		panel35.add(new JLabel("Font size"));
+		mainPanel.add(panel35);
 		
 		panel4 = new JPanel();
 		panel4.setLayout(new BorderLayout());
@@ -137,7 +157,25 @@ public class AxesConfigFrame extends JFrame {
 			
 		}
 		
-		AxesOptions ops = new AxesOptions(min, max, tickSpacing, gridLinesBox.isSelected() );
+		if (max <= min) {
+			JOptionPane.showMessageDialog(this, "Maximum value must be greater than minimum");
+			return;
+		}
+		
+		//Adjust tick spacing so there are always a few ticks showing
+		if (tickSpacing > (max-min)) {
+			tickSpacing = (max-min)/4.0;
+		}
+		
+		Integer fontSize = 12;
+		try {
+			fontSize = (Integer)fontSizeSpinner.getValue();
+		}
+		catch (Exception ex) {
+			//Probably will never happen
+		}
+		
+		AxesOptions ops = new AxesOptions(min, max, tickSpacing, gridLinesBox.isSelected(), fontSize );
 		
 		if (changingXAxis)
 			currentAxes.setXAxisOptions(ops);
@@ -153,7 +191,7 @@ public class AxesConfigFrame extends JFrame {
 		currentAxes = null;
 	}
 	
-	public void display(AxesElement axes, double min, double max, double num, java.awt.Point pos, String axis) {
+	public void display(AxesElement axes, double min, double max, double num, int fontSize, java.awt.Point pos, String axis) {
 		setLocationRelativeTo(parentFig);
 		if (axis.equals(X_AXIS)) {
 			this.setTitle("Configure X Axis");
@@ -168,14 +206,17 @@ public class AxesConfigFrame extends JFrame {
 		pos.y += parentFig.getBounds().y;
 
 		setLocation(pos);
-		minXField.setText(Double.toString(min));
-		maxXField.setText(Double.toString(max));
+		minXField.setText(StringUtilities.format(min));
+		maxXField.setText(StringUtilities.format(max));
 		if (changingXAxis)
 			gridLinesBox.setSelected( axes.showXGrid() );
 		else {
 			gridLinesBox.setSelected( axes.showYGrid() );
 		}
-		tickXField.setText(String.valueOf(num));
+		tickXField.setText(StringUtilities.format(num,4));
+		
+		fontSizeSpinner.setValue(new Integer(fontSize));
+		
 		setVisible(true);
 	}
 	
@@ -185,16 +226,19 @@ public class AxesConfigFrame extends JFrame {
 		public double min;
 		public double tickSpacing;
 		public boolean drawAxis;
+		public int fontSize;
 		
 		public AxesOptions(double min, 
 							double max, 
 							double tickSpacing,
-							boolean axis) 
+							boolean axis,
+							int fontSize) 
 		{
 			this.max = max;
 			this.min = min;
 			this.tickSpacing = tickSpacing;
 			this.drawAxis = axis;
+			this.fontSize = fontSize;
 		}
 		
 	}

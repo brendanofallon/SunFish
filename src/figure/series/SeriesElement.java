@@ -1,14 +1,12 @@
 package figure.series;
 
+import figure.Figure;
+import figure.FigureElement;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
-
-import topLevelGUI.SunFishFrame;
-
-import figure.Figure;
-import figure.FigureElement;
 
 /**
  * A generic element that displays a series of data, either ordinal or non-ordinal. Subclasses implement
@@ -39,9 +37,9 @@ public abstract class SeriesElement extends FigureElement {
 	public static final String[] styleTypes = {XYSeriesElement.LINES, XYSeriesElement.POINTS, XYSeriesElement.POINTS_AND_LINES, XYSeriesElement.BOXES };
 	
 	//The strokes used to paint the line and the highlighted line
-	Stroke normalStroke;
-	Stroke highlightStroke;
-	protected float highlightWidthIncrease = 4.0f; //Width increase of highlight stroke over normal stroke
+	BasicStroke normalStroke;
+	BasicStroke highlightStroke;
+	protected float highlightWidthIncrease = 3.25f; //Width increase of highlight stroke over normal stroke
 	
 	//If we want to display multiple series with box shapes, then we divide their 
 	//size by a certain factor, and offset them by a certain amount
@@ -128,7 +126,6 @@ public abstract class SeriesElement extends FigureElement {
 			currentMode = newMode;
 		}
 		else {
-			SunFishFrame.getSunFishFrame().getLogger().warning("Illegal series mode type request from XYSeriesElement : " + newMode);
 			throw new IllegalArgumentException("Cannot set a series mode to : " + newMode);
 		}
 	}
@@ -160,6 +157,7 @@ public abstract class SeriesElement extends FigureElement {
 		this.boxWidthDivisor = boxWidthDivisor;
 		this.boxOffset = offset;
 	}
+
 	
 	
 

@@ -394,6 +394,21 @@ public class SequenceGroup implements Partitionable, SequenceChangeListener {
 		 fireSGChanged(ChangeType.SequenceModified);
 		 haplotypesKnown = false;
 	 }
+	 
+	 /**
+	  * Changes the symbol for all sequences in the given column to Sequence.UNKNOWN
+	  * @param colsToMask
+	  */
+	 public void maskColumns(int[] colsToMask) {
+		 for(Sequence sq : seqs) {
+			 sq.maskColumns(colsToMask);   
+		 }
+			
+		 if (colsToMask.length > 0) {
+			 fireSGChanged(ChangeType.SequenceModified);
+			 haplotypesKnown = false;
+		 }
+	 }
 
 
 	 
@@ -592,5 +607,7 @@ public class SequenceGroup implements Partitionable, SequenceChangeListener {
 			//System.out.println("Firing SG change event to listener: " + l);
 		}
 	}
+
+	
 	 
  }
