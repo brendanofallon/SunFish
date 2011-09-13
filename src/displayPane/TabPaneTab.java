@@ -32,7 +32,7 @@ public class TabPaneTab extends JPanel {
 	static final ImageIcon closeDisabled = getIcon("icons/close_disabled_12x12.png");
 	static final ImageIcon popEnabled = getIcon("icons/popWindow_enabled_16x16.png");
 	static final ImageIcon popDisabled = getIcon("icons/popWindow_16x16.png");
-	static final ImageIcon unsavedIcon = getIcon("icons/unsavedIcon.png");
+	static final ImageIcon unsavedIcon = getIcon("icons/unsaved.png");
 	
 	protected boolean unsaved = true;
 	
@@ -122,7 +122,6 @@ public class TabPaneTab extends JPanel {
 	
 	public void paint(Graphics g) {
 		super.paint(g);
-		//Graphics2D g2d = (Graphics2D)g;
 		
 		//If i'm associated with a Display that has unsaved changes, paint a little marker
 		Component myComponent = getMyComponent();
@@ -131,7 +130,7 @@ public class TabPaneTab extends JPanel {
 
 				int xVal = this.getWidth()/2 + (title.getWidth())/2-2;
 
-				g.drawImage(unsavedIcon.getImage(), xVal, 1, null); 
+				g.drawImage(unsavedIcon.getImage(), xVal, 2, null); 
 			}
 		}
 	}

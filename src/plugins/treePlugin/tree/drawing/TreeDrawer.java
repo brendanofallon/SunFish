@@ -846,7 +846,7 @@ public class TreeDrawer implements TreeListener {
 		}
 		else {
 			g2d.setFont(node.getFont());
-			System.out.println("Setting tip label font to : " +  node.getFont());
+			//System.out.println("Setting tip label font to : " +  node.getFont());
 		}
 		
 		int labX = x;

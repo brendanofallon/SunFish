@@ -47,15 +47,15 @@ public class FrequencyRowPainter extends AbstractRowPainter {
 		freqs = new int[columnCount][4];
 		for(int i=0; i<columnCount; i++) {
 			float[] frequencies = getColumnBaseFreqs(currentSG, i);
-			boolean colorCol = false;
+			boolean colorCol = currentSG.hasGap(i) || currentSG.hasUnknown(i); //If there's a gap or unknown we color this column
 			for(int j=0; j<4; j++) {
 				freqs[i][j] = (int)((colorArraySize-1)*frequencies[j]);
 				if (frequencies[j] > 0.0f && frequencies[j] < 1.0f) {
 					colorCol = true;
 				}
 			}
-			colorIt[i] = colorCol;
 			
+			colorIt[i] = colorCol;
 			
 		}
 		
@@ -104,7 +104,7 @@ public class FrequencyRowPainter extends AbstractRowPainter {
 		for(int col=firstCol; col < Math.min(lastCol, seq.length()); col++) {
 			if (colorIt[col]) {
 				int baseIndex = -1;
-				color = Color.white;
+				color = Color.LIGHT_GRAY;
 
 				Integer value = baseIntMap.get(seq.at(col));
 				if (value != null)
@@ -112,22 +112,16 @@ public class FrequencyRowPainter extends AbstractRowPainter {
 
 				if (baseIndex>-1) {
 					int[] freqCol = freqs[col];
-
+					color = Color.LIGHT_GRAY;
 					if (baseIndex < freqCol.length) {
 						int colorIndex = freqCol[baseIndex];
-						if (colorIndex< (freqColorArray.length-1)) {
-							color = freqColorArray[ colorIndex ];
-							g2d.setColor(color);
-							g2d.fillRect(colPos, y, cellWidth, rowHeight);
-						}
+						color = freqColorArray[ colorIndex ];
 					}
-					else {
-						color = Color.LIGHT_GRAY;
-						g2d.setColor(color);
-						g2d.fillRect(colPos, y, cellWidth, rowHeight);
-					}
-
+					
 				}
+				
+				g2d.setColor(color);
+				g2d.fillRect(colPos, y, cellWidth, rowHeight);
 			}
 				
 			colPos += cellWidth;

@@ -14,6 +14,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
@@ -31,6 +32,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import plugins.treePlugin.TreePlugin;
 import plugins.treePlugin.tree.DrawableNode;
 import plugins.treePlugin.tree.DrawableTree;
 import plugins.treePlugin.tree.Tree;
@@ -45,6 +47,7 @@ import java.util.Iterator;
 
 import topLevelGUI.SunFishFrame;
 
+import fileTree.FileTreePanel;
 import guiWidgets.glassDropPane.GlassDropPane;
 import guiWidgets.glassDropPane.GlassPaneThing;
 import guiWidgets.CFButton;
@@ -96,9 +99,27 @@ public class MultiTreeDisplay extends Display {
 		this.iconPath = sunfishParent.getIconPath();
 		smallFont = new Font("Sans", Font.PLAIN, 10);
 		setLayout(new BorderLayout());
-		setBorder(null);
+		setBorder(BorderFactory.createEmptyBorder());
 	}
 
+	/**
+	 *  Return an icon associated with the given url. For instance, if the url is icons/folder.png, we look in the
+	 * package icons for the image folder.png, and create and return an icon from it. 
+	 * @param url
+	 * @return
+	 */
+	public static ImageIcon getIcon(String url) {
+		ImageIcon icon = null;
+		try {
+			java.net.URL imageURL = TreePlugin.class.getResource(url);
+			icon = new ImageIcon(imageURL);
+		}
+		catch (Exception ex) {
+			SunFishFrame.getSunFishFrame().getLogger().warning("Error loadind icon from resouce : " + ex);
+		}
+		return icon;
+	}
+	
 	@Override
 	public String getName() {
 		return "Multi-tree display";
@@ -142,6 +163,8 @@ public class MultiTreeDisplay extends Display {
 		parentPanel = new JPanel();
 		parentPanel.setLayout(new BoxLayout(parentPanel, BoxLayout.PAGE_AXIS));
 		parentPanel.setBackground(Color.white);
+		parentPanel.setBorder(BorderFactory.createEmptyBorder());
+		
 		JPanel topPanel = new JPanel();
 		topPanel.setBackground(Color.white);
 		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.LINE_AXIS));
@@ -166,7 +189,7 @@ public class MultiTreeDisplay extends Display {
 		editingPane.setVisible(false);
 		
 		Font displayFont = new Font("Sans", Font.PLAIN, 12);
-		saveButton = new CFButton(new ImageIcon(iconPath + "save_22x22.png"), "Save image");
+		saveButton = new CFButton(getIcon("icons/saveImage.png"), "Save image");
 		saveButton.addActionListener(new java.awt.event.ActionListener() {
 	            public void actionPerformed(java.awt.event.ActionEvent evt) {
 	                saveButtonPressed();
@@ -272,7 +295,7 @@ public class MultiTreeDisplay extends Display {
 		topPanel.add(dropPane);
 		
 		topPanel.add(Box.createHorizontalGlue());
-		previousTreeButton = new CFButton(new ImageIcon(iconPath + "backward_16x16.png"));
+		previousTreeButton = new CFButton(getIcon("icons/backward_16x16.png"));
 		previousTreeButton.setToolTipText("Display previous tree");
 		previousTreeButton.setEnabled(true);
 		previousTreeButton.addActionListener(new java.awt.event.ActionListener() {
@@ -283,7 +306,7 @@ public class MultiTreeDisplay extends Display {
 		topPanel.add(previousTreeButton);
 		
 		
-		nextTreeButton = new CFButton(new ImageIcon(iconPath + "forward_16x16.png") );
+		nextTreeButton = new CFButton(getIcon("icons/forward_16x16.png") );
 		nextTreeButton.setToolTipText("Display next tree");
 		nextTreeButton.setEnabled(true);
 		nextTreeButton.addActionListener(new java.awt.event.ActionListener() {
@@ -296,6 +319,8 @@ public class MultiTreeDisplay extends Display {
 		parentPanel.add(topPanel);
 		parentPanel.add(chart);
 		scrollPane = new JScrollPane(parentPanel);
+		scrollPane.setBorder(null);
+		scrollPane.setViewportBorder(null);
 		add(scrollPane, BorderLayout.CENTER);
 		dropPane.setParentForClip(scrollPane);
 	}

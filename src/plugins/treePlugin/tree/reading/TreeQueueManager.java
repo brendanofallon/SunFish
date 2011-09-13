@@ -32,6 +32,22 @@ public class TreeQueueManager {
 	}
 	
 	/**
+	 * Returns the index of the left (lowest) edge of the 'window', starting with zero
+	 * @return
+	 */
+	public int getLeftIndex() {
+		return leftIndex;
+	}
+	
+	/**
+	 * Returns the index of the right (greatest) edge of the window
+	 * @return
+	 */
+	public int getRightIndex() {
+		return rightIndex;
+	}
+	
+	/**
 	 * Extends the queue by howmany trees in the right direction. 
 	 * @param howmany
 	 * @return the number of trees actually added

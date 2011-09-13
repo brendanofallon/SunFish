@@ -2,6 +2,7 @@ package plugins.treePlugin.treeFigure;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
@@ -51,7 +52,6 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 	boolean drawBoundsSet;
 	
 	JPopupMenu popup;
-	
 
 	int rows;
 	int cols;
@@ -85,6 +85,10 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 	int calls = 0;
 	
 	BufferedImage treeImage;
+
+	//Used for drawing small tree numbers in corner of individual trees
+	boolean drawTreeNumbers = true;
+	Font treeNumberFont = new Font("Sans", Font.PLAIN, 11);
 	
 	public MultiTreeChart(MultiTreeDisplay display) {
 		addMouseListener(this);
@@ -113,6 +117,14 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 		cols = 3;
 		selectedTree = null;	
 		
+	}
+	
+	/**
+	 * When true, small numbers indicating the number of the tree are painted
+	 * @param draw
+	 */
+	public void setDrawTreeNumbers(boolean draw) {
+		this.drawTreeNumbers = draw;
 	}
 	
 	private void initializePopup() {
@@ -349,7 +361,7 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 		int boxWidth = (int)(width/(double)cols);
 		int boxHeight = (int)(height/(double)rows);
 		Iterator<DrawableTree> treeit = currentTrees.iterator();
-		
+		int count = currentTrees.getLeftIndex();
 		for(int row=0; row<rows; row++) {
 			boundsRect.y = row*boxHeight;
 			for(int col=0; col<cols; col++) {
@@ -366,14 +378,18 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 						double tx = treeDrawer.translatePixelToTreeX(selectRect.x);
 						double ty = treeDrawer.translatePixelToTreeY(selectRect.y - boundsRect.y);
 						translatedRect.setRect(tx, ty, twidth, theight);
-						boolean selected = tree.setSelectedNodes(translatedRect);
+						//boolean selected = tree.setSelectedNodes(translatedRect);
 					}
 					
 					treeDrawer.paint(g2d, boundsRect);
 					
-//					if (boundsRect.contains(mousePos)) {
-//						selectedTree = tree;
-//					}
+					if (drawTreeNumbers) {
+						g2d.setFont(treeNumberFont);
+						g2d.setColor(Color.GRAY);
+						g2d.drawString(String.valueOf(count+1), boundsRect.x+4, boundsRect.y+boundsRect.height-5);
+					}
+					count++;
+					
 				}
 			}//cols
 		}//rows
