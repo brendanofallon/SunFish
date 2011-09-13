@@ -114,11 +114,17 @@ public class SunFishFrame extends JFrame {
 	
 	static SunFishFrame sunfish;
 	
+	PrimaryLogHandler logHandler;
+	
     public SunFishFrame(Logger logger, Properties props) {
         this.logger = logger;
         this.props = props;
         sunfish = this;
     	
+        //Send messages from logger to the 'primary' handler
+        logHandler = new PrimaryLogHandler(this);
+        logger.addHandler(logHandler);
+        
         this.iconPath = props.getProperty("iconPath");
         if (iconPath == null)
         	this.iconPath = "icons/";
@@ -243,6 +249,10 @@ public class SunFishFrame extends JFrame {
     	return onAMac;
     }
     
+    /**
+     * Deprecated, we should never use this now
+     * @return
+     */
     public String getIconPath() {
     	return iconPath;
     }
@@ -425,8 +435,6 @@ public class SunFishFrame extends JFrame {
 		return logger;
 	}
 	
-
-	
 	/**
 	 * Takes a string formatted r-g-b and returns a color with those values
 	 * used to take a properties string and make a new color from it
@@ -503,7 +511,6 @@ public class SunFishFrame extends JFrame {
 		displaysMenu.removeAll();
 		for(final Display display : openDisplays) {
 			String name = display.getTitle();
-			//System.out.println("Title is : " + name);
 			if (name==null || name.length()==0)
 				name = display.getFileName();
 			
@@ -736,6 +743,15 @@ public class SunFishFrame extends JFrame {
 		return ccpListener;
 	}
 
+	
+	/**
+	 * Set the text of the bottom right label to the new string
+	 */
+	public void setWelcomePanelText(String txt) {
+		if (welcomePanel != null) {
+			welcomePanel.appendLine(txt);
+		}
+	}
 	
 	/**
 	 * Set the text of the bottom right label to the new string
@@ -1088,11 +1104,10 @@ public class SunFishFrame extends JFrame {
         
         //ImageIcon cowfishImage = new ImageIcon(iconPath + "justTheFish.png");
        // JLabel defaultLabel = new JLabel(cowfishImage);
-        JPanel defaultBackground = new DefaultDisplayPaneBackground();
-        //defaultBackground.add(defaultLabel);
+        welcomePanel = new WelcomePanel();
                 
-		defaultDisplayPane.addTab("Welcome", defaultBackground);
-		defaultDisplayPane.setTabComponentAt(defaultDisplayPane.indexOfComponent(defaultBackground) , new TabPaneTab("Welcome", this, null));
+		defaultDisplayPane.addTab("Welcome", welcomePanel);
+		defaultDisplayPane.setTabComponentAt(defaultDisplayPane.indexOfComponent(welcomePanel) , new TabPaneTab("Welcome", this, null));
 		defaultDisplayPane.setOpaque(false);
 		
 		rightSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
@@ -1188,6 +1203,7 @@ public class SunFishFrame extends JFrame {
     private javax.swing.JSplitPane outerSplitPane;
     private javax.swing.JMenuItem quitMenuItem;
     private javax.swing.JSplitPane rightSplitPane;
+    private WelcomePanel welcomePanel;
     JFileChooser fileChooser;
 
     private JDialog aboutBox;
