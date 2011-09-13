@@ -46,9 +46,11 @@ public class TajimasD extends BaseCounter {
 		double count = 0;
 		for(int i=begin; i<(begin+length); i++) {
 			if (partitionIndex<0 || sg.getPartitionNumForSite(i)==partitionIndex) {
-				sSum += thetaWArr[i];
-				piSum += piArr[i];
-				count++;
+				if ( ! Double.isNaN(piArr[i])) {
+					sSum += thetaWArr[i];
+					piSum += piArr[i];
+					count++;
+				}
 			}
 		}
 		

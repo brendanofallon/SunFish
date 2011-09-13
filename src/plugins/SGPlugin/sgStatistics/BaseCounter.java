@@ -70,23 +70,10 @@ public abstract class BaseCounter implements SGCalculator {
 	 */
 	public double getValueRange(int begin, int length, double partitionIndex) {
 		if (freqs == null || freqs.length == 0) {
-			//ErrorWindow.showErrorWindow(new NullPointerException("BaseCounter " + getName() + " was not properly initialized"), null);
+			System.out.println("Value is NaN, freqs is : " + freqs);
 			return Double.NaN;
 		}
 		
-//		double sum = 0;
-//		double counted = 0;
-//		for(int i=begin; i<(begin+length); i++) {
-//			if (partitionIndex<0 || sg.getPartitionNumForSite(i)==partitionIndex) {
-//				sum += freqs[i];
-//				counted++;
-//			}
-//		}
-//		
-////		if (Double.isNaN(sum)) {
-////			System.out.println("BaseCounter sum is NaN for calculator " + getName());
-////		}
-//		return sum/counted;
 		Double[] sumCount = getSumAndCount(begin, length, partitionIndex);
 		if (sumCount[1]==0)
 			return 0;
@@ -106,6 +93,7 @@ public abstract class BaseCounter implements SGCalculator {
 	public Double[] getSumAndCount(int begin, int length, double partitionIndex) {
 		if (freqs == null || freqs.length == 0) {
 			//ErrorWindow.showErrorWindow(new NullPointerException("BaseCounter " + getName() + " was not properly initialized"), null);
+			System.out.println("Value is NaN, freqs is : " + freqs);
 			return  new Double[]{0.0, Double.NaN};
 		}
 		
@@ -113,8 +101,10 @@ public abstract class BaseCounter implements SGCalculator {
 		double counted = 0;
 		for(int i=begin; i<(begin+length); i++) {
 			if (partitionIndex<0 || sg.getPartitionNumForSite(i)==partitionIndex) {
-				sum += freqs[i];
-				counted++;
+				if ( ! Double.isNaN(freqs[i])) {
+					sum += freqs[i];
+					counted++;
+				}
 			}
 		}
 		
