@@ -46,8 +46,6 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.WindowConstants;
 import javax.swing.text.DefaultEditorKit;
 
-import newfiletree.NewFileTree;
-
 import sunfish.SunFishApp;
 import topLevelGUI.analyzer.AnalysisPane;
 import topLevelGUI.analyzer.Analyzable;

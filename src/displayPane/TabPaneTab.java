@@ -1,5 +1,6 @@
 package displayPane;
 
+import fileTree.FileTreePanel;
 import guiWidgets.IconButton;
 import guiWidgets.PrettyLabel;
 
@@ -38,11 +39,11 @@ public class TabPaneTab extends JPanel {
 	DisplayPane pane;
 	SunFishFrame cfFrame;
 	Icon icon;
-	ImageIcon closeEnabled;
-	ImageIcon closeDisabled;
-	ImageIcon popEnabled;
-	ImageIcon popDisabled;
-	ImageIcon unsavedIcon;
+	static final ImageIcon closeEnabled = getIcon("icons/close_enabled_12x12.png");
+	static final ImageIcon closeDisabled = getIcon("icons/close_disabled_12x12.png");
+	static final ImageIcon popEnabled = getIcon("icons/popWindow_enabled_16x16.png");
+	static final ImageIcon popDisabled = getIcon("icons/popWindow_16x16.png");
+	static final ImageIcon unsavedIcon = getIcon("icons/unsavedIcon.png");
 	
 	protected boolean unsaved = true;
 	
@@ -62,20 +63,20 @@ public class TabPaneTab extends JPanel {
 		title = new PrettyLabel(icon, shortName);
 		title.setFont(new Font("Sans", Font.PLAIN, 12));
 		
-		closeEnabled = new ImageIcon(iconPath + "close_enabled_12x12.png");
-		closeDisabled = new ImageIcon(iconPath + "close_disabled_12x12.png");
-		
-		popEnabled = new ImageIcon(iconPath + "popWindow_enabled_16x16.png");
-		popDisabled = new ImageIcon(iconPath + "popWindow_16x16.png");
+//		closeEnabled = new ImageIcon(iconPath + "close_enabled_12x12.png");
+//		closeDisabled = new ImageIcon(iconPath + "close_disabled_12x12.png");
+//		
+//		popEnabled = new ImageIcon(iconPath + "popWindow_enabled_16x16.png");
+//		popDisabled = new ImageIcon(iconPath + "popWindow_16x16.png");
 			
-		close = new JLabel(new ImageIcon(iconPath + "close_disabled_12x12.png"));
+		//close = new JLabel(new ImageIcon(iconPath + "close_disabled_12x12.png"));
 		
 		close.setFocusable(false);
 		close.setPreferredSize(new Dimension(15, 15));
 		close.addMouseListener(new ClickHandler(close));
 		close.setToolTipText("Close this tab");
 		
-		pop = new JLabel(new ImageIcon(iconPath + "popWindow_16x16.png"));
+		pop = new JLabel(getIcon("icons/popWindow_16x16.png"));
 		
 		pop.setFocusable(false);
 		
@@ -84,21 +85,28 @@ public class TabPaneTab extends JPanel {
 		pop.addMouseListener(new ClickHandler(pop));
 
 		pop.setToolTipText("Display in new window");
-
-		
-		
-		unsavedIcon = new ImageIcon(iconPath + "unsavedIcon.png");
 		
 		//System.out.println("Unsaved width: " + unsavedIcon.getIconWidth() + " height: " + unsavedIcon.getIconHeight());
 		
 		TabMouseListener tbListener = new TabMouseListener(this);
 		title.addMouseListener(tbListener);
 		close.addMouseListener(tbListener);
-		pop.addMouseListener(tbListener);
 		
 		add(close);
 		add(title);
 		add(pop);
+	}
+	
+	static ImageIcon getIcon(String url) {
+			ImageIcon icon = null;
+			try {
+				java.net.URL imageURL = FileTreePanel.class.getResource(url);
+				icon = new ImageIcon(imageURL);
+			}
+			catch (Exception ex) {
+				SunFishFrame.getSunFishFrame().getLogger().warning("Error loading icon from resouce : " + ex);
+			}
+			return icon;
 	}
 	
 	public void setTitle(String newTitle) {
