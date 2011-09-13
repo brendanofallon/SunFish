@@ -3,8 +3,12 @@ package topLevelGUI.analyzer;
 import guiWidgets.InsetShadowPanel;
 import guiWidgets.RoundedBezelPanel;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
 
 import topLevelGUI.SunFishFrame;
 
@@ -23,9 +27,9 @@ import topLevelGUI.SunFishFrame;
 public class AnalysisPane extends InsetShadowPanel {
 
 	Analyzable currentAnalyzer = null;
-	
+		
 	public AnalysisPane(SunFishFrame sfFrame) {
-		setBackground(Color.white);
+		super(0, 7, 1, 7); //These numbers make the insets line up well on a mac (running OS X 10.7), but should be tested on other platforms
 		setTransferHandler( new AnalysisPaneTransferHandler(sfFrame) );
 		setPreferredSize(new Dimension(200, 500));
 	}
@@ -34,6 +38,8 @@ public class AnalysisPane extends InsetShadowPanel {
 	public Analyzable getCurrentAnalyzer() {
 		return currentAnalyzer;
 	}
+	
+	
 	
 	public void showAnalyzer(Analyzable newAnalyzer) {
 		boolean canClose = true;
@@ -47,6 +53,7 @@ public class AnalysisPane extends InsetShadowPanel {
 		}
 		
 		if (canClose) {
+			newAnalyzer.setOpaque(false);
 			add(newAnalyzer);
 			currentAnalyzer = newAnalyzer;
 			revalidate();

@@ -1086,10 +1086,10 @@ public class SunFishFrame extends JFrame {
         defaultDisplayPane.setMinimumSize(new java.awt.Dimension(120, 200));
         defaultDisplayPane.setPreferredSize(new java.awt.Dimension(120, 350));
         
-        ImageIcon cowfishImage = new ImageIcon(iconPath + "justTheFish.png");
-        JLabel defaultLabel = new JLabel(cowfishImage);
+        //ImageIcon cowfishImage = new ImageIcon(iconPath + "justTheFish.png");
+       // JLabel defaultLabel = new JLabel(cowfishImage);
         JPanel defaultBackground = new DefaultDisplayPaneBackground();
-        defaultBackground.add(defaultLabel);
+        //defaultBackground.add(defaultLabel);
                 
 		defaultDisplayPane.addTab("Welcome", defaultBackground);
 		defaultDisplayPane.setTabComponentAt(defaultDisplayPane.indexOfComponent(defaultBackground) , new TabPaneTab("Welcome", this, null));

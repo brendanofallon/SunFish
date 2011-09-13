@@ -24,9 +24,22 @@ public class InsetShadowPanel extends JPanel {
 	final static Color color5 = new Color(255, 255, 255, 100);
 	final static Color color6 = new Color(255, 255, 255, 200);
 	
+	private int leftInset = 1; 
+	private int rightInset = 1;
+	private int topInset = 1;
+	private int bottomInset = 1;
+	
+	public InsetShadowPanel(int topInset, int leftInset, int bottomInset, int rightInset) {
+		this.leftInset = leftInset;
+		this.topInset = topInset;
+		this.rightInset = rightInset;
+		this.bottomInset = bottomInset;
+		this.setBorder(BorderFactory.createEmptyBorder(topInset+1,leftInset+1,bottomInset,rightInset));
+		
+	}
 	
 	public InsetShadowPanel() {
-		this.setBorder(BorderFactory.createEmptyBorder(5, 2, 2, 2));
+		this.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
 	}
 	
 	public void setHighlight(boolean highlight) {
@@ -34,26 +47,28 @@ public class InsetShadowPanel extends JPanel {
 		repaint();
 	}
 	
-	public void paintComponent(Graphics g) {
-		
-		g.setColor(bgColor);
-		g.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
-	
+	public void paint(Graphics g) {
 		((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
 		
+		g.setColor(bgColor);
+		g.fillRoundRect(leftInset, topInset, getWidth()-(leftInset+rightInset), getHeight()-(topInset+bottomInset), 10, 10);
+		
+		super.paint(g);
+
+		//Shadow down from top
 		g.setColor(color1);
-		g.drawLine(4, 0, getWidth()-4, 0);
+		g.drawLine(leftInset+4, topInset, getWidth()-4-rightInset, topInset);
 		g.setColor(color2);
-		g.drawLine(2, 1, getWidth()-2, 1);
+		g.drawLine(leftInset+2, topInset+1, getWidth()-2-rightInset, topInset+1);
 		g.setColor(color3);
-		g.drawLine(2, 2, getWidth()-2, 2);
+		g.drawLine(leftInset+2, topInset+2, getWidth()-2-rightInset, topInset+2);
 
 		g.setColor(color2);
-		g.drawLine(1, 2, 1, getHeight()-2);
+		g.drawLine(leftInset+1, topInset+2, leftInset+1, getHeight()-2-bottomInset);
 		g.setColor(color3);
-		g.drawLine(2, 2, 2, 4);
-		g.drawLine(3,3,4,3);
+		g.drawLine(leftInset+2, topInset+2, leftInset+2, topInset+4);
+		g.drawLine(leftInset+3, topInset+3,leftInset+4, topInset+3);
 		
 		g.setColor(color4);
 		g.drawLine(2, getHeight()-3, getWidth()-2, getHeight()-3);
@@ -67,7 +82,7 @@ public class InsetShadowPanel extends JPanel {
 		
 		
 		g.setColor(color2);
-		g.drawRoundRect(0, 0, getWidth()+1, getHeight()+1, 10, 10);
+		g.drawRoundRect(leftInset, topInset, getWidth()+1-(leftInset+rightInset), getHeight()+1-(topInset+bottomInset), 10, 10);
 		
 		if (highlightBorder) {
 			g.setColor(highlightColor);
