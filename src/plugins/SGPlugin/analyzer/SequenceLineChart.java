@@ -109,8 +109,6 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
 	Font defaultFont;
 	JPopupMenu chartPopup;
 	Logger logger;
-
-	String iconPath = "./icons/";
 	
 	SGStatisticsRegistry sgReg;
 
@@ -125,16 +123,12 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
 		defaultFont = new Font("Sans", Font.PLAIN, 11);
 		currentName = "(no data to display)";
 		this.logger = SunFishFrame.getSunFishFrame().getLogger();
-		this.iconPath = SunFishFrame.getSunFishFrame().getIconPath();
-		//setBorder(BorderFactory.createLineBorder(Color.white, 4));
 		setBorder(BorderFactory.createEmptyBorder(3, 3, 2, 2));
 		setBackground(Color.white);
 		
 		sgSeriesMap = new HashMap<SequenceGroup, List<AbstractSeries>>();
-		//seriesSGMap = new HashMap<AbstractSeries, SequenceGroup>();
 		
 		sgReg = new SGStatisticsRegistry();
-		//sgList = new ArrayList<SequenceGroup>();
 		currentCalculators = new ArrayList<String>();
 		initializeComponents();
 	}
@@ -143,7 +137,8 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
 	/**
 	 * If the given data is a SequenceGroup, add it to this line chart.
 	 */
-	@Override public void addObjectData(Object obj) {
+	@Override 
+	public void addObjectData(Object obj) {
 		if (obj instanceof SequenceGroup) {
 			SequenceGroup sg = (SequenceGroup)obj;
 			addSequenceGroup( sg );
@@ -195,7 +190,6 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
 		originalSG = currentSG;
 		originalSG.addPartitionListener(this);
 		originalSG.addSGChangeListener(this);
-		//sgList.add((SequenceGroup)data);
 		sgSeriesMap.put((SequenceGroup)data, new ArrayList<AbstractSeries>());
 		currentName = name;
 		if (topLabel!=null)

@@ -7,7 +7,16 @@ import plugins.SGPlugin.analyzer.SequenceGroupCalculator;
 import element.sequence.*;
 import element.sequence.SequenceGroupChangeListener.ChangeType;
 
-
+/**
+ * A row painter that colors bases based on their column frequency. Non-polymorphic columns are all colored blue, but the color of polymorphic 
+ * columns is a function of the minor allele frequency. The LOWER the MAF, the more brightly alleles matching that state are colored. Gaps
+ * and unknowns are colored gray. 
+ * 
+ * Instead of looking at each column individually, this tabulates which columns need special attention at first (via a call to recalculateFreqs), 
+ * and then just colors one big blue block over the whole thing and then draws the special columns on top of that. 
+ * @author brendano
+ *
+ */
 public class FrequencyRowPainter extends AbstractRowPainter {
  
 
@@ -59,7 +68,7 @@ public class FrequencyRowPainter extends AbstractRowPainter {
 			
 		}
 		
-		System.out.println("Recalculating frequencies");
+		//System.out.println("Recalculating frequencies");
 		recalculateFreqs = false;
 	}
 	
