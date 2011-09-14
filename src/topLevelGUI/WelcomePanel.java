@@ -27,8 +27,9 @@ public class WelcomePanel extends JPanel {
 	JScrollPane textScrollPane;
 	
 	JTextArea textArea;
-	Color fontColor = new Color(0.3f, 0.3f, 0.3f, 0.7f);
-	Font font = new Font("Sans", Font.PLAIN, 12);
+	Color fontColor = new Color(0.2f, 0.2f, 0.2f, 0.8f);
+	Font font = new Font("Sans", Font.PLAIN, 11);
+	int topInset = 150;
 	
 	public WelcomePanel() {
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -38,8 +39,6 @@ public class WelcomePanel extends JPanel {
 		textArea.setOpaque(false);
 		textArea.setFont(font);
 		textArea.setForeground(fontColor);
-		
-
 		
 		textScrollPane = new JScrollPane(textArea);
 		textScrollPane.setPreferredSize(new Dimension(500, 200));
@@ -51,7 +50,7 @@ public class WelcomePanel extends JPanel {
 		textScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		textScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-		this.setBorder(BorderFactory.createEmptyBorder(200, 10, 10, 50));
+		this.setBorder(BorderFactory.createEmptyBorder(topInset, 10, 10, 50));
 		this.add(textScrollPane);
 		this.add(Box.createHorizontalGlue());
 		this.setOpaque(false);
@@ -69,12 +68,18 @@ public class WelcomePanel extends JPanel {
 	public void clearText() {
 		textArea.setText("");
 	}
-	public void paintComponent(Graphics g) {
+	
+	public void paint(Graphics g) {
 		Graphics2D g2d = (Graphics2D)g;
 		
 		GradientPaint gp = new GradientPaint(1f, 1f, new Color(0.9f, 0.9f, 0.9f), 1f, getHeight(), Color.white);
 		g2d.setPaint(gp);
 		g2d.fillRect(0, 0, getWidth(), getHeight());
+		super.paint(g);
+		
+		gp = new GradientPaint(1f, topInset, new Color(0.92f, 0.92f, 0.92f, 1.0f), 1f, topInset+150, new Color(1f, 1f, 1f, 0.0f));
+		g2d.setPaint(gp);
+		g2d.fillRect(0, topInset/2, getWidth(), getHeight()-(topInset/2-50));
 	}
 	
 		

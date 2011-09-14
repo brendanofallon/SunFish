@@ -128,7 +128,6 @@ public class SunFishApp {
 				for(Display display : displays) {
 					String msg = "Registering display: " + display.getName() + " version: " + display.getVersionNumber();
 					logger.info(msg);
-					sunfish.setWelcomePanelText(msg);
 				}
 
 				sunfish.registerDisplays(displays);
@@ -137,7 +136,6 @@ public class SunFishApp {
 				for(FileParser parser : parsers) {
 					String msg = "Registering parser: " + parser.getName() + " version: " + parser.getVersionNumber();
 					logger.info(msg);
-					sunfish.setWelcomePanelText(msg);
 				}
 
 				sunfish.registerParsers(parsers);
