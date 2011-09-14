@@ -81,6 +81,7 @@ import figure.series.SeriesListener;
 import figure.series.XYSeries;
 import figure.series.XYSeriesElement;
 import figure.series.XYSeriesFigure;
+import fileTree.FileTreePanel;
 import guiWidgets.CFButton;
 import guiWidgets.ColorSwatchButton;
 
@@ -108,8 +109,6 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
 	Font defaultFont;
 	JPopupMenu chartPopup;
 	Logger logger;
-
-	String iconPath = "./icons/";
 	
 	SGStatisticsRegistry sgReg;
 
@@ -124,16 +123,12 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
 		defaultFont = new Font("Sans", Font.PLAIN, 11);
 		currentName = "(no data to display)";
 		this.logger = SunFishFrame.getSunFishFrame().getLogger();
-		this.iconPath = SunFishFrame.getSunFishFrame().getIconPath();
-		//setBorder(BorderFactory.createLineBorder(Color.white, 4));
 		setBorder(BorderFactory.createEmptyBorder(3, 3, 2, 2));
 		setBackground(Color.white);
 		
 		sgSeriesMap = new HashMap<SequenceGroup, List<AbstractSeries>>();
-		//seriesSGMap = new HashMap<AbstractSeries, SequenceGroup>();
 		
 		sgReg = new SGStatisticsRegistry();
-		//sgList = new ArrayList<SequenceGroup>();
 		currentCalculators = new ArrayList<String>();
 		initializeComponents();
 	}
@@ -142,7 +137,8 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
 	/**
 	 * If the given data is a SequenceGroup, add it to this line chart.
 	 */
-	@Override public void addObjectData(Object obj) {
+	@Override 
+	public void addObjectData(Object obj) {
 		if (obj instanceof SequenceGroup) {
 			SequenceGroup sg = (SequenceGroup)obj;
 			addSequenceGroup( sg );
@@ -194,7 +190,6 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
 		originalSG = currentSG;
 		originalSG.addPartitionListener(this);
 		originalSG.addSGChangeListener(this);
-		//sgList.add((SequenceGroup)data);
 		sgSeriesMap.put((SequenceGroup)data, new ArrayList<AbstractSeries>());
 		currentName = name;
 		if (topLabel!=null)
@@ -566,6 +561,18 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
 		return pane;
 	}
 	
+	public static ImageIcon getIcon(String url) {
+		ImageIcon icon = null;
+		try {
+			java.net.URL imageURL = SequenceLineChart.class.getResource(url);
+			icon = new ImageIcon(imageURL);
+		}
+		catch (Exception ex) {
+			SunFishFrame.getSunFishFrame().getLogger().warning("Error loadind icon from resouce : " + ex);
+		}
+		return icon;
+	}
+	
 	private void initializeComponents() {
 		int leftPanelWidth = 250;
 		JPanel parentPanel = new JPanel();
@@ -583,9 +590,6 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
         windowStepSpinner = new javax.swing.JSpinner();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        saveButton = new CFButton("Save image", new ImageIcon(iconPath + "save_24x24.png"));
-        saveButton.setFont(defaultFont);
-        saveButton.setToolTipText("Save chart image");
 
         leftPanel.setPreferredSize(new java.awt.Dimension(leftPanelWidth, 300));
         leftPanel.setBackground(Color.WHITE);
@@ -602,7 +606,6 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
         topPanel.setBackground(Color.white);
         topPanel.setMaximumSize(new Dimension(leftPanelWidth, 16));
         
-        topPanel.add(saveButton);
         topPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         leftPanel.add(topPanel);
 
@@ -611,10 +614,22 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
         buttonPanel.setOpaque(false);
         buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         buttonPanel.setAlignmentX(LEFT_ALIGNMENT);
-        buttonPanel.setMaximumSize(new Dimension(leftPanelWidth, 30));
-        buttonPanel.setPreferredSize(new Dimension(leftPanelWidth, 30));
+        buttonPanel.setMaximumSize(new Dimension(leftPanelWidth, 40));
+        buttonPanel.setPreferredSize(new Dimension(leftPanelWidth, 36));
 
-        JButton restoreButton = new JButton("Restore");
+        saveButton = new JButton(getIcon("icons/save.png"));
+        saveButton.setFont(defaultFont);
+        saveButton.setToolTipText("Save chart image");
+        saveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				saveChartImage();
+			}
+        });
+        saveButton.setAlignmentX(LEFT_ALIGNMENT);
+        
+        
+        JButton restoreButton = new JButton(getIcon("icons/expand.png"));
+        restoreButton.setToolTipText("Restore default axes boundaries");
         restoreButton.setFont(defaultFont);
         restoreButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -623,7 +638,8 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
         });
         restoreButton.setAlignmentX(LEFT_ALIGNMENT);
         
-        JButton zoomButton = new JButton("Zoom");
+        JButton zoomButton = new JButton(getIcon("icons/zoom.png"));
+        zoomButton.setToolTipText("Zoom to selection region");
         zoomButton.setFont(defaultFont);
         zoomButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -632,9 +648,9 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
         });
         zoomButton.setAlignmentX(LEFT_ALIGNMENT);
         
-        JButton selectRangeButton = new JButton("Select");
+        JButton selectRangeButton = new JButton(getIcon("icons/selectColumns.png"));
         selectRangeButton.setFont(defaultFont);
-        //selectRangeButton.setPreferredSize(new Dimension(80, 24));
+        selectRangeButton.setToolTipText("Select range in sequence group");
         selectRangeButton.setAlignmentX(LEFT_ALIGNMENT);
         selectRangeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -653,10 +669,11 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
 			}
         });
         
+        
+        buttonPanel.add(saveButton);
         buttonPanel.add(restoreButton);
         buttonPanel.add(zoomButton);
         buttonPanel.add(selectRangeButton);
-        buttonPanel.add(clearButton);
         leftPanel.add(buttonPanel);
 
         
@@ -717,13 +734,6 @@ public class SequenceLineChart extends Analyzable implements SeriesListener, Par
             	newWindowSizeAction();
             }
         });
-
-        saveButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-            	saveChartImage();
-            }
-        });
-      
 
         
         leftPanel.add(Box.createRigidArea(new Dimension(0, 10)));

@@ -1,30 +1,20 @@
 package displayPane;
 
-import guiWidgets.IconButton;
 import guiWidgets.PrettyLabel;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-
 import topLevelGUI.SunFishFrame;
 
 
@@ -38,11 +28,11 @@ public class TabPaneTab extends JPanel {
 	DisplayPane pane;
 	SunFishFrame cfFrame;
 	Icon icon;
-	ImageIcon closeEnabled;
-	ImageIcon closeDisabled;
-	ImageIcon popEnabled;
-	ImageIcon popDisabled;
-	ImageIcon unsavedIcon;
+	static final ImageIcon closeEnabled = getIcon("icons/close_enabled_12x12.png");
+	static final ImageIcon closeDisabled = getIcon("icons/close_disabled_12x12.png");
+	static final ImageIcon popEnabled = getIcon("icons/popWindow_enabled_16x16.png");
+	static final ImageIcon popDisabled = getIcon("icons/popWindow_16x16.png");
+	static final ImageIcon unsavedIcon = getIcon("icons/unsaved.png");
 	
 	protected boolean unsaved = true;
 	
@@ -51,7 +41,6 @@ public class TabPaneTab extends JPanel {
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 		this.pane = cfFrame.getDisplayPane();
 		this.cfFrame = cfFrame;
-		String iconPath = cfFrame.getIconPath();
 		this.icon = icon;
 		setBackground(new Color(1.0f, 1.0f, 1.0f, 0.0f));
 
@@ -61,21 +50,15 @@ public class TabPaneTab extends JPanel {
 			shortName = name.substring(0, suffixPos);
 		title = new PrettyLabel(icon, shortName);
 		title.setFont(new Font("Sans", Font.PLAIN, 12));
-		
-		closeEnabled = new ImageIcon(iconPath + "close_enabled_12x12.png");
-		closeDisabled = new ImageIcon(iconPath + "close_disabled_12x12.png");
-		
-		popEnabled = new ImageIcon(iconPath + "popWindow_enabled_16x16.png");
-		popDisabled = new ImageIcon(iconPath + "popWindow_16x16.png");
+
 			
-		close = new JLabel(new ImageIcon(iconPath + "close_disabled_12x12.png"));
-		
+		close = new JLabel(closeDisabled);		
 		close.setFocusable(false);
 		close.setPreferredSize(new Dimension(15, 15));
 		close.addMouseListener(new ClickHandler(close));
 		close.setToolTipText("Close this tab");
 		
-		pop = new JLabel(new ImageIcon(iconPath + "popWindow_16x16.png"));
+		pop = new JLabel(popDisabled);
 		
 		pop.setFocusable(false);
 		
@@ -84,21 +67,26 @@ public class TabPaneTab extends JPanel {
 		pop.addMouseListener(new ClickHandler(pop));
 
 		pop.setToolTipText("Display in new window");
-
-		
-		
-		unsavedIcon = new ImageIcon(iconPath + "unsavedIcon.png");
-		
-		//System.out.println("Unsaved width: " + unsavedIcon.getIconWidth() + " height: " + unsavedIcon.getIconHeight());
 		
 		TabMouseListener tbListener = new TabMouseListener(this);
 		title.addMouseListener(tbListener);
 		close.addMouseListener(tbListener);
-		pop.addMouseListener(tbListener);
 		
 		add(close);
 		add(title);
 		add(pop);
+	}
+	
+	static ImageIcon getIcon(String url) {
+			ImageIcon icon = null;
+			try {
+				java.net.URL imageURL = TabPaneTab.class.getResource(url);
+				icon = new ImageIcon(imageURL);
+			}
+			catch (Exception ex) {
+				SunFishFrame.getSunFishFrame().getLogger().warning("Error loading icon from resouce : " + ex);
+			}
+			return icon;
 	}
 	
 	public void setTitle(String newTitle) {
@@ -134,7 +122,6 @@ public class TabPaneTab extends JPanel {
 	
 	public void paint(Graphics g) {
 		super.paint(g);
-		//Graphics2D g2d = (Graphics2D)g;
 		
 		//If i'm associated with a Display that has unsaved changes, paint a little marker
 		Component myComponent = getMyComponent();
@@ -143,7 +130,7 @@ public class TabPaneTab extends JPanel {
 
 				int xVal = this.getWidth()/2 + (title.getWidth())/2-2;
 
-				g.drawImage(unsavedIcon.getImage(), xVal, 1, null); 
+				g.drawImage(unsavedIcon.getImage(), xVal, 2, null); 
 			}
 		}
 	}

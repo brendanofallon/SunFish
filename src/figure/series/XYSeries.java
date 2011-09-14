@@ -259,8 +259,16 @@ public class XYSeries extends AbstractSeries {
 		if (pointList.size()==0) {
 			return 0;
 		}
-		double min = pointList.get(0).getY();
-		for(int i=0; i<pointList.size(); i++)
+
+		//Shenanigans are for when first value is NaN, which actually happens sometimes
+		int index = 0;
+		double min = pointList.get(index).getY();
+		while( Double.isNaN(min)) {
+			 min = pointList.get(index).getY();
+			index++;
+		}
+			
+		for(int i=index; i<pointList.size(); i++)
 			if (min>pointList.get(i).getY())
 				min = pointList.get(i).getY();
 		return min;
@@ -294,8 +302,16 @@ public class XYSeries extends AbstractSeries {
 		if (pointList.size()==0) {
 			return Double.NaN;
 		}
-		double max = pointList.get(0).getY();
-		for(int i=0; i<pointList.size(); i++)
+		
+		//Shenanigans are for when first value is NaN, which actually happens sometimes
+		int index = 0;
+		double max = pointList.get(index).getY();
+		while( Double.isNaN(max)) {
+			max = pointList.get(index).getY();
+			index++;
+		}
+		
+		for(int i=index; i<pointList.size(); i++)
 			if (max<pointList.get(i).getY())
 				max = pointList.get(i).getY();
 		return max;

@@ -181,19 +181,32 @@ public class SGColumnHeader extends JPanel implements ZeroColumnListener, Partit
 			int max = sg.getMaxSeqLength();
 			int rulerHeight = Math.min(maxRulerHeight, height);
 
+			
+			
 			g2d.drawLine(0, rulerHeight-1, max*cellWidth, rulerHeight-1); //Bottom horizontal line
 			int offSet = 0;
+			
 			if (zeroColumn != 0)
 				offSet = zeroColumn % majorTick;
-			for(int i=offSet; i<max; i+=majorTick) {
-				g2d.drawLine(i*cellWidth, 0, i*cellWidth, rulerHeight-1);
-				if (i>offSet)
-					g2d.drawString(String.valueOf(i-zeroColumn), i*cellWidth+2, rulerHeight-4);
-			}
-
+			
+			//Draw minor ticks first so col. numbers are on top
 			for(int i=offSet; i<max; i+=minorTick) {
 				g2d.drawLine(i*cellWidth, 2, i*cellWidth, rulerHeight-1);
 			}
+			
+			//Now draw major ticks and 
+			for(int i=offSet; i<max; i+=majorTick) {
+				g2d.drawLine(i*cellWidth, 0, i*cellWidth, rulerHeight-1);
+				if (i>offSet) {
+					String numStr = String.valueOf(i-zeroColumn);
+					g2d.setColor(Color.white);
+					g2d.fillRect(i*cellWidth+2, 1, g2d.getFontMetrics().stringWidth(numStr), 10);
+					g2d.setColor(Color.DARK_GRAY);
+					g2d.drawString(numStr, i*cellWidth+2, rulerHeight-4);
+				}
+			}
+
+
 			
 			Color[] partitionColors = ColorDefaults.partitionColors;
 			for (int i=0; i<=sg.getMaxSeqLength(); i++) {

@@ -122,19 +122,23 @@ public class SunFishApp {
 
 		List<Plugin> plugins = loader.getPlugins();
 
-
-
 		for(Plugin plugin : plugins) {
 			try {
 				List<Display> displays = plugin.getDisplays();
-				for(Display display : displays) 
-					logger.info("Registering display: " + display.getName() + " version: " + display.getVersionNumber());
+				for(Display display : displays) {
+					String msg = "Registering display: " + display.getName() + " version: " + display.getVersionNumber();
+					logger.info(msg);
+					sunfish.setWelcomePanelText(msg);
+				}
 
 				sunfish.registerDisplays(displays);
 
 				List<FileParser> parsers = plugin.getParsers();
-				for(FileParser parser : parsers) 
-					logger.info("Registering parser: " + parser.getName() + " version: " + parser.getVersionNumber());
+				for(FileParser parser : parsers) {
+					String msg = "Registering parser: " + parser.getName() + " version: " + parser.getVersionNumber();
+					logger.info(msg);
+					sunfish.setWelcomePanelText(msg);
+				}
 
 				sunfish.registerParsers(parsers);
 
@@ -158,9 +162,10 @@ public class SunFishApp {
     		Properties userProps = loadUserProperties(defaultProps);
     		sunfishApp = this;
     		sunfish = new SunFishFrame(logger, userProps);
+    		sunfish.setVisible(true);
+    		
     		loadPlugins(sunfish);
     		sunfish.associateParsers();
-    		sunfish.setVisible(true);
     		
     		sunfish.reopenFiles();
     	}

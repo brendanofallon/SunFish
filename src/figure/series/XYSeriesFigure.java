@@ -115,9 +115,7 @@ public class XYSeriesFigure extends SeriesFigure {
 			if (ymin > 0)
 				ymin = 0;
 			double ymax = seriesElements.get(0).getMaxY();
-
-			//System.out.println("raw max y is : " + ymax);
-			
+						
 			for(int i=1; i<seriesElements.size(); i++) {	
 				double serMaxY = seriesElements.get(i).getMaxY(); 
 				if (serMaxY > ymax)
@@ -143,8 +141,6 @@ public class XYSeriesFigure extends SeriesFigure {
 					ymax *= 1.5;
 				}
 			}
-			
-		//	System.out.println("Upperval max y is : " + ymax);
 			axes.setDataBounds(axes.getXMin(), axes.getXMax(), ymin, ymax);
 			axes.setRationalTicks();
 		}

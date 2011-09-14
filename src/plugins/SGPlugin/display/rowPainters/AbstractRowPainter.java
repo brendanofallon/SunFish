@@ -27,11 +27,11 @@ import element.sequence.SequenceGroupChangeListener.ChangeType;
 /**
  * Abstract base class for many of the row painter classes. This class houses code for rapid drawing
  * of contiguous sequences of bases. The basic idea is that we divide sequences into blocks of
- * hashBlockSize bases, then compute a hash value unique to a particular sequence. We compute and
+ * hashBlockSize bases, then compute a hash value unique to a particular sub-sequence. We compute and
  * store all of these for the entire group of sequences whenever we load a new sequenceGroup. 
  * Finally, when it comes time to paint, we store a bunch of images of the drawn bases in a map that 
  * is keyed by hash values. So painting is the fairly fast - load the (already computed) hash value
- * for the block of bases we want to paint, use that hash value get the (already drawn) image, and
+ * for the block of bases we want to paint, use that hash value to get the (already drawn) image, and
  * just paint that image to the desired graphics object. The downside is memory overhead - we end 
  * up storing a possibly big array of int's for all of the hash values, and a map of a bunch of images.
  * The current implementation is smart enough to only store images for patterns we've already seen,
@@ -89,8 +89,10 @@ public abstract class AbstractRowPainter implements SGRowPainter, SequenceGroupC
 	
 	//Stores a mapping from a base character to an integer
 	protected Map<Character, Integer> baseIntMap = new HashMap<Character, Integer>();
+	
 	//Stores a mapping from integer to base characters
 	protected Map<Integer, Character> intBaseMap = new HashMap<Integer, Character>();
+	
 	//Stores images indexed by hash values. These are built on an as-needed basis
 	//by calls from drawBaseGroup to createBaseImage
 	protected Map<Integer, BufferedImage> hashImageMap = new HashMap<Integer, BufferedImage>();
@@ -226,19 +228,7 @@ public abstract class AbstractRowPainter implements SGRowPainter, SequenceGroupC
 	/**
 	 * Paint the current used using the specified graphics object and other params, and the 
 	 * sequenceGroup associated with this rowPainter. The given sequenceGroup is ignored
-	 */
-//	public void paintRow(Graphics2D g2d, 
-//			int row, 
-//			int firstCol,
-//			int lastCol, 
-//			int x, 
-//			int y, 
-//			int cellWidth,
-//			int rowHeight, 
-//			SequenceGroup unusedsg) {
-//		paintRow(g2d, row, firstCol, lastCol, x, y, cellWidth, rowHeight);
-//	}
-	
+	 */	
 	public abstract void paintRow(Graphics2D g2d, 
 			int row, 
 			int firstCol,
@@ -284,8 +274,6 @@ public abstract class AbstractRowPainter implements SGRowPainter, SequenceGroupC
 	 */
 	protected void drawBackground(Graphics2D g2d, int x, int y2, int colWidth, int height,
 			int row, int site, Sequence seq) {
-
-		
 	}
 	
 	/**
@@ -544,6 +532,7 @@ public abstract class AbstractRowPainter implements SGRowPainter, SequenceGroupC
 		baseIntMap.put('-', GAP);
 		baseIntMap.put(' ', GAP);
 		baseIntMap.put('?', GAP);
+		baseIntMap.put('N', GAP);
 		
 		intBaseMap.put(A, 'A');
 		intBaseMap.put(C, 'C');
@@ -555,6 +544,7 @@ public abstract class AbstractRowPainter implements SGRowPainter, SequenceGroupC
 		intBaseMap.put(M, 'M');
 		intBaseMap.put(W, 'W');
 		intBaseMap.put(GAP, '-');
+		
 	}
 	
 	

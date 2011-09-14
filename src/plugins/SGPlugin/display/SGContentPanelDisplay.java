@@ -861,6 +861,7 @@ public class SGContentPanelDisplay extends Display implements UndoableActionSour
 			}
 		});
 		zoomSlider.setPreferredSize(new Dimension(100, 20));
+		zoomSlider.setToolTipText("Change column width");
 		zoomSlider.setFont(new Font("Sans", Font.PLAIN, 0));
 		zoomSlider.setPaintLabels(false);
 		zoomSlider.setPaintTicks(false);
@@ -1098,7 +1099,7 @@ public class SGContentPanelDisplay extends Display implements UndoableActionSour
 		appearancePane.addComponent(letterBox);
 		
 
-		selectRowsButton = new CFButton("Select rows", getIcon("selectRows.png"));
+		selectRowsButton = new CFButton("Select rows", getIcon("selectRowsDialog.png"));
 		selectRowsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 showRowSelectionFrame(evt);
@@ -1106,7 +1107,7 @@ public class SGContentPanelDisplay extends Display implements UndoableActionSour
         });
 		selectionPane.addComponent(selectRowsButton);
 		
-		selectColumnsButton = new CFButton("Select Columns", getIcon("selectColumnIcon.png"));
+		selectColumnsButton = new CFButton("Select Columns", getIcon("selectColumnsDialog.png"));
 		selectColumnsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 selectColumnsActionPerformed(evt);
@@ -1114,15 +1115,15 @@ public class SGContentPanelDisplay extends Display implements UndoableActionSour
         });
 		selectionPane.addComponent(selectColumnsButton);
 		
-		addSelectionToButton = new CFButton("Add selection..", getIcon("addSelection.png"));
-		addSelectionToButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addSelectionActionPerformed(evt);
-            }
-        });
-		selectionPane.addComponent(addSelectionToButton);
+//		addSelectionToButton = new CFButton("Add selection..", getIcon("addSelection.png"));
+//		addSelectionToButton.addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                addSelectionActionPerformed(evt);
+//            }
+//        });
+//		selectionPane.addComponent(addSelectionToButton);
 		
-		newPartitionButton = new CFButton("New partition");
+		newPartitionButton = new CFButton("New partition", getIcon("addPartition.png"));
 		newPartitionButton.addActionListener(new ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				newPartitionFromSelection();
@@ -1130,7 +1131,7 @@ public class SGContentPanelDisplay extends Display implements UndoableActionSour
 		});
 		selectionPane.addComponent(newPartitionButton);
 		
-		JButton managePartitionsButton = new CFButton("Clear partitions");
+		JButton managePartitionsButton = new CFButton("Clear partitions", getIcon("clearPartitions.png"));
 		managePartitionsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				clearPartitions();	

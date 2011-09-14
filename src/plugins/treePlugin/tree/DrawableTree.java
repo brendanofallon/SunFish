@@ -809,7 +809,7 @@ public abstract class DrawableTree extends Tree {
 
 		//treeStr = treeStr.replaceAll("\\[&[^\\]]+\\]", ""); //Used to strip off beast-style annotations, this may not be the right spot for this...
 		try {
-			System.out.println("Tree str is now: " + treeStr);
+			//System.out.println("Tree str is now: " + treeStr);
 			buildSubtreeFromNewick(root, treeStr);
 		}
 		catch (Exception ex) {

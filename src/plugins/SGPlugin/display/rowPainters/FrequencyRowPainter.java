@@ -7,7 +7,16 @@ import plugins.SGPlugin.analyzer.SequenceGroupCalculator;
 import element.sequence.*;
 import element.sequence.SequenceGroupChangeListener.ChangeType;
 
-
+/**
+ * A row painter that colors bases based on their column frequency. Non-polymorphic columns are all colored blue, but the color of polymorphic 
+ * columns is a function of the minor allele frequency. The LOWER the MAF, the more brightly alleles matching that state are colored. Gaps
+ * and unknowns are colored gray. 
+ * 
+ * Instead of looking at each column individually, this tabulates which columns need special attention at first (via a call to recalculateFreqs), 
+ * and then just colors one big blue block over the whole thing and then draws the special columns on top of that. 
+ * @author brendano
+ *
+ */
 public class FrequencyRowPainter extends AbstractRowPainter {
  
 
@@ -47,19 +56,19 @@ public class FrequencyRowPainter extends AbstractRowPainter {
 		freqs = new int[columnCount][4];
 		for(int i=0; i<columnCount; i++) {
 			float[] frequencies = getColumnBaseFreqs(currentSG, i);
-			boolean colorCol = false;
+			boolean colorCol = currentSG.hasGap(i) || currentSG.hasUnknown(i); //If there's a gap or unknown we color this column
 			for(int j=0; j<4; j++) {
 				freqs[i][j] = (int)((colorArraySize-1)*frequencies[j]);
 				if (frequencies[j] > 0.0f && frequencies[j] < 1.0f) {
 					colorCol = true;
 				}
 			}
-			colorIt[i] = colorCol;
 			
+			colorIt[i] = colorCol;
 			
 		}
 		
-		System.out.println("Recalculating frequencies");
+		//System.out.println("Recalculating frequencies");
 		recalculateFreqs = false;
 	}
 	
@@ -104,7 +113,7 @@ public class FrequencyRowPainter extends AbstractRowPainter {
 		for(int col=firstCol; col < Math.min(lastCol, seq.length()); col++) {
 			if (colorIt[col]) {
 				int baseIndex = -1;
-				color = Color.white;
+				color = Color.LIGHT_GRAY;
 
 				Integer value = baseIntMap.get(seq.at(col));
 				if (value != null)
@@ -112,22 +121,16 @@ public class FrequencyRowPainter extends AbstractRowPainter {
 
 				if (baseIndex>-1) {
 					int[] freqCol = freqs[col];
-
+					color = Color.LIGHT_GRAY;
 					if (baseIndex < freqCol.length) {
 						int colorIndex = freqCol[baseIndex];
-						if (colorIndex< (freqColorArray.length-1)) {
-							color = freqColorArray[ colorIndex ];
-							g2d.setColor(color);
-							g2d.fillRect(colPos, y, cellWidth, rowHeight);
-						}
+						color = freqColorArray[ colorIndex ];
 					}
-					else {
-						color = Color.LIGHT_GRAY;
-						g2d.setColor(color);
-						g2d.fillRect(colPos, y, cellWidth, rowHeight);
-					}
-
+					
 				}
+				
+				g2d.setColor(color);
+				g2d.fillRect(colPos, y, cellWidth, rowHeight);
 			}
 				
 			colPos += cellWidth;
