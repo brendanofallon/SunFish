@@ -1,18 +1,19 @@
 #--- nothing to report ----
-#Wed Sep 14 09:11:35 PDT 2011
-fileTree.recentItem.2=/Users/brendano/akey_data/10.28e6_L50K.fas
+#Thu Sep 15 10:42:10 PDT 2011
+fileTree.recentItem.2=/Users/brendano/akey_data/116.44e6_masked.fas
 fileTree.recentItem.1=/Users/brendano/akey_data/118.84e6_L50K.fas
-fileTree.recentItem.0=/Users/brendano/akey_data/19.08e6_L50K.fas
+fileTree.recentItem.0=/Users/brendano/workspace/SunFish2/testfiles/test.tsv
 frame.height=799
+fileTree.block.2=/Users/brendano/treesimj_runs
 fileTree.block.1=/Users/brendano/akey_data
 fileTree.block.0=/Users/brendano/workspace/SunFish2/testfiles
 frame.width=1532
 displayPane.height=440
-fileTreePanel.width=251
+fileTreePanel.width=253
 iconPath=icons/
 this.path=/Users/brendano/workspace/SunFish2/
-fileTree.blocknum=2
-fileTree.recentItem.5=/Users/brendano/workspace/SunFish2/testfiles/test.tsv
-fileTree.recentItem.4=/Users/brendano/akey_data/103.24e6_masked.fas
-display.number=1
-fileTree.recentItem.3=/Users/brendano/akey_data/116.44e6_masked.fas
+fileTree.blocknum=3
+fileTree.recentItem.5=/Users/brendano/treesimj_runs/tj_dna_2_purtree.xml
+fileTree.recentItem.4=/Users/brendano/treesimj_runs/tj_dna_1_purbsp.trees
+display.number=2
+fileTree.recentItem.3=/Users/brendano/treesimj_runs/tj_dna_1.fas

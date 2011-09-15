@@ -11,10 +11,13 @@ import java.awt.Rectangle;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+
+import fileTree.FileTreePanel;
 
 /**
  * This panel is the first one displayed in the DisplayPane when the application opens. Not really sure
@@ -27,9 +30,11 @@ public class WelcomePanel extends JPanel {
 	JScrollPane textScrollPane;
 	
 	JTextArea textArea;
-	Color fontColor = new Color(0.2f, 0.2f, 0.2f, 0.8f);
+	Color fontColor = new Color(0.15f, 0.15f, 0.15f, 0.8f);
 	Font font = new Font("Sans", Font.PLAIN, 11);
 	int topInset = 150;
+	
+	static final ImageIcon sunfishname = getIcon("icons/sunfishname.png");
 	
 	public WelcomePanel() {
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -56,6 +61,18 @@ public class WelcomePanel extends JPanel {
 		this.setOpaque(false);
 	}
 	
+	public static ImageIcon getIcon(String url) {
+		ImageIcon icon = null;
+		try {
+			java.net.URL imageURL = WelcomePanel.class.getResource(url);
+			icon = new ImageIcon(imageURL);
+		}
+		catch (Exception ex) {
+			SunFishFrame.getSunFishFrame().getLogger().warning("Error loadind icon from resouce : " + ex);
+		}
+		return icon;
+	}
+	
 	/**
 	 * Append a new line to the text area
 	 * @param line
@@ -80,6 +97,11 @@ public class WelcomePanel extends JPanel {
 		gp = new GradientPaint(1f, topInset, new Color(0.92f, 0.92f, 0.92f, 1.0f), 1f, topInset+150, new Color(1f, 1f, 1f, 0.0f));
 		g2d.setPaint(gp);
 		g2d.fillRect(0, topInset/2, getWidth(), getHeight()-(topInset/2-50));
+		
+		if (sunfishname != null) {
+			g2d.drawImage(sunfishname.getImage(), getWidth()- sunfishname.getIconWidth()-50, 10, null);
+		}
+		
 	}
 	
 		
