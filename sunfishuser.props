@@ -1,19 +1,25 @@
 #--- nothing to report ----
-#Thu Sep 15 10:42:10 PDT 2011
-fileTree.recentItem.2=/Users/brendano/akey_data/116.44e6_masked.fas
-fileTree.recentItem.1=/Users/brendano/akey_data/118.84e6_L50K.fas
-fileTree.recentItem.0=/Users/brendano/workspace/SunFish2/testfiles/test.tsv
-frame.height=799
-fileTree.block.2=/Users/brendano/treesimj_runs
-fileTree.block.1=/Users/brendano/akey_data
-fileTree.block.0=/Users/brendano/workspace/SunFish2/testfiles
-frame.width=1532
-displayPane.height=440
-fileTreePanel.width=253
-iconPath=icons/
+#Thu Sep 29 15:08:25 PDT 2011
+fileTree.recentItem.5=/Users/brendano/akey_data/29.6e6_L50K_lastARG.xml
+fileTree.recentItem.4=/Users/brendano/akey_data/16.167_testmask.fas
 this.path=/Users/brendano/workspace/SunFish2/
-fileTree.blocknum=3
-fileTree.recentItem.5=/Users/brendano/treesimj_runs/tj_dna_2_purtree.xml
-fileTree.recentItem.4=/Users/brendano/treesimj_runs/tj_dna_1_purbsp.trees
-display.number=2
-fileTree.recentItem.3=/Users/brendano/treesimj_runs/tj_dna_1.fas
+fileTree.block.3=/Users/brendano/workspace/ACG
+fileTree.recentItem.3=/Users/brendano/akey_data/10.28e6_L50K.fas
+fileTree.block.2=/Users/brendano/treesimj_runs
+fileTree.recentItem.2=/Users/brendano/workspace/ACG/gapTest.fas
+fileTree.block.1=/Users/brendano/akey_data
+fileTree.recentItem.1=/Users/brendano/workspace/ACG/ConsensusTree500.tre
+fileTree.block.0=/Users/brendano/workspace/SunFish2/testfiles
+displayPane.height=417
+fileTree.recentItem.0=/Users/brendano/workspace/ACG/ConsensusTree1000.tre
+display.number=5
+display.4=/Users/brendano/akey_data/29.6e6_L50K_lastARG.xml
+display.3=/Users/brendano/akey_data/16.167_testmask.fas
+display.2=/Users/brendano/akey_data/10.28e6_L50K.fas
+display.1=/Users/brendano/workspace/ACG/ConsensusTree500.tre
+fileTreePanel.width=301
+display.0=/Users/brendano/workspace/ACG/ConsensusTree1000.tre
+frame.height=767
+fileTree.blocknum=4
+frame.width=1666
+iconPath=icons/

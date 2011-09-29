@@ -89,17 +89,20 @@ public class WelcomePanel extends JPanel {
 	public void paint(Graphics g) {
 		Graphics2D g2d = (Graphics2D)g;
 		
-		GradientPaint gp = new GradientPaint(1f, 1f, new Color(0.9f, 0.9f, 0.9f), 1f, getHeight(), Color.white);
-		g2d.setPaint(gp);
+//		GradientPaint gp = new GradientPaint(1f, 1f, new Color(0.9f, 0.9f, 0.9f), 1f, getHeight(), Color.white);
+//		g2d.setPaint(gp);
+//		g2d.fillRect(0, 0, getWidth(), getHeight());
+		g2d.setColor(Color.white);
 		g2d.fillRect(0, 0, getWidth(), getHeight());
+		
 		super.paint(g);
 		
-		gp = new GradientPaint(1f, topInset, new Color(0.92f, 0.92f, 0.92f, 1.0f), 1f, topInset+150, new Color(1f, 1f, 1f, 0.0f));
+		GradientPaint gp = new GradientPaint(1f, Math.max(50, getHeight()-250), new Color(0.92f, 0.92f, 0.92f), 1f, Math.max(200, getHeight()-100), new Color(1f, 1f, 1f, 0.0f));
 		g2d.setPaint(gp);
-		g2d.fillRect(0, topInset/2, getWidth(), getHeight()-(topInset/2-50));
+		g2d.fillRect(0, 0, getWidth(), Math.max(getHeight()-10, 150));
 		
 		if (sunfishname != null) {
-			g2d.drawImage(sunfishname.getImage(), getWidth()- sunfishname.getIconWidth()-50, 10, null);
+			g2d.drawImage(sunfishname.getImage(), getWidth()- sunfishname.getIconWidth()-50, 50, null);
 		}
 		
 	}

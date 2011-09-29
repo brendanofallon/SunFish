@@ -307,10 +307,10 @@ public class SGColumnHeader extends JPanel implements ZeroColumnListener, Partit
 			g.drawLine(dMin*columnWidth+1, lineY, dMax*columnWidth-1, lineY);
 			
 			g.drawLine(dMin*columnWidth, lineY, (dMin)*columnWidth+5, 0);
-			g.drawLine(dMin*columnWidth, lineY, (dMin)*columnWidth+5, rulerHeight-1);
+			g.drawLine(dMin*columnWidth, lineY, (dMin)*columnWidth+5, rulerHeight-3);
 
 			g.drawLine(dMax*columnWidth, lineY, (dMax)*columnWidth-5, 0);
-			g.drawLine(dMax*columnWidth, lineY, (dMax)*columnWidth-5, rulerHeight-1);
+			g.drawLine(dMax*columnWidth, lineY, (dMax)*columnWidth-5, rulerHeight-3);
 
 			g.setColor(Color.white);
 			String label = String.valueOf(dMax-dMin);

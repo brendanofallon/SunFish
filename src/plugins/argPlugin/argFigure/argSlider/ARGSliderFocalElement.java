@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
 
 import figure.Figure;
 import figure.FigureElement;
@@ -131,12 +132,12 @@ public class ARGSliderFocalElement extends FigureElement {
 	 * @param pos
 	 * @return
 	 */
-	private boolean isPointOnLeft(element.Point pos) {
-		double dif = pos.x*xFactor - toPixelX(leftEdge);
+	private boolean isPointOnLeft(Point2D pos) {
+		double dif = pos.getX()*xFactor - toPixelX(leftEdge);
 		
 		//System.out.println("Pos x: " + pos.x*xFactor + " leftEdge : " + toPixelX(leftEdge) + " dif: " + dif);
 		if (dif > 0 && dif < 10) {
-			int pixY = round(pos.y*yFactor);
+			int pixY = round(pos.getY()*yFactor);
 			//System.out.println("PixY : " + pixY + " baseLine : " + bgElement.getBaseLine());
 			if (pixY < bgElement.getBaseLine() && pixY > bgElement.getBaseLine()-height  )
 				return true;
@@ -145,22 +146,22 @@ public class ARGSliderFocalElement extends FigureElement {
 	}
 	
 	
-	private boolean isPointOnCenter(element.Point pos) {
-		double dif = pos.x*xFactor - toPixelX( (leftEdge+rightEdge)/2.0);
+	private boolean isPointOnCenter(Point2D pos) {
+		double dif = pos.getX()*xFactor - toPixelX( (leftEdge+rightEdge)/2.0);
 		if (dif > -10 && dif < 10) {
-			int pixY = round(pos.y*yFactor);
+			int pixY = round(pos.getY()*yFactor);
 			if (pixY < bgElement.getBaseLine() && pixY > bgElement.getBaseLine()-height  )
 				return true;
 		}
 		return false;
 	}
 
-	private boolean isPointOnRight(element.Point pos) {
-		double dif = pos.x*xFactor - toPixelX(rightEdge);
+	private boolean isPointOnRight(Point2D pos) {
+		double dif = pos.getX()*xFactor - toPixelX(rightEdge);
 		
 		//System.out.println("Pos x: " + pos.x*xFactor + " leftEdge : " + toPixelX(leftEdge) + " dif: " + dif);
 		if (dif < 0 && dif > -10) {
-			int pixY = round(pos.y*yFactor);
+			int pixY = round(pos.getY()*yFactor);
 			//System.out.println("PixY : " + pixY + " baseLine : " + bgElement.getBaseLine());
 			if (pixY < bgElement.getBaseLine() && pixY > bgElement.getBaseLine()-height  )
 				return true;
@@ -174,29 +175,29 @@ public class ARGSliderFocalElement extends FigureElement {
 	 * Do what you will here. 
 	 * @param pos The mouse position in bounds (0..1) coordinates
 	 */
-	protected void mouseMoved(element.Point pos) {	};
+	protected void mouseMoved(Point2D  pos) {	};
 	
-	protected void mousePressed(element.Point pos) {	
+	protected void mousePressed(Point2D pos) {	
 		if (isPointOnLeft(pos)) {
 			leftDragging = true;
-			prevDragLoc.x = pos.x;
-			prevDragLoc.y = pos.y;
+			prevDragLoc.x = pos.getX();
+			prevDragLoc.y = pos.getY();
 		}
 		
 		if (isPointOnRight(pos)) {
 			rightDragging = true;
-			prevDragLoc.x = pos.x;
-			prevDragLoc.y = pos.y;
+			prevDragLoc.x = pos.getX();
+			prevDragLoc.y = pos.getY();
 		}
 		
 		if (isPointOnCenter(pos)) {
 			centerDragging = true;
-			prevDragLoc.x = pos.x;
-			prevDragLoc.y = pos.y;
+			prevDragLoc.x = pos.getX();
+			prevDragLoc.y = pos.getY();
 		}
 	}
 	
-	protected void mouseReleased(element.Point pos) {	
+	protected void mouseReleased(Point2D pos) {	
 		leftDragging = false;
 		centerDragging = false;
 		rightDragging = false;
@@ -208,21 +209,21 @@ public class ARGSliderFocalElement extends FigureElement {
 	 * set correctly, and simply adjust the positions of the left and right edge accordingly. We also fire new "range changed" events
 	 * which are typically listened to by the parent figure, which then dispatches the event to the ARGDisplay so the ARG can be redrawn
 	 */
-	protected void mouseDragged(element.Point pos) {	
+	protected void mouseDragged(Point2D pos) {	
 		if (leftDragging) {		
-			leftEdge += (pos.x - prevDragLoc.x)/bounds.width;
+			leftEdge += (pos.getX() - prevDragLoc.x)/bounds.width;
 			if (leftEdge < 0)
 				leftEdge = 0;
 			if (leftEdge > (rightEdge-0.01))
 				leftEdge = rightEdge-0.01;
 				
-			prevDragLoc.x = pos.x;
-			prevDragLoc.y = pos.y;
+			prevDragLoc.x = pos.getX();
+			prevDragLoc.y = pos.getY();
 			fireNewRangeEvent();
 		}
 		
 		if (rightDragging) {
-			rightEdge += (pos.x - prevDragLoc.x)/bounds.width;
+			rightEdge += (pos.getX() - prevDragLoc.x)/bounds.width;
 			if (rightEdge < 0)
 				rightEdge = 0;
 			if (rightEdge > 1.0) {
@@ -231,13 +232,13 @@ public class ARGSliderFocalElement extends FigureElement {
 			if (rightEdge < (leftEdge+0.01))
 				rightEdge = leftEdge+0.01;
 				
-			prevDragLoc.x = pos.x;
-			prevDragLoc.y = pos.y;
+			prevDragLoc.x = pos.getX();
+			prevDragLoc.y = pos.getY();
 			fireNewRangeEvent();
 		}
 		
 		if (centerDragging) {
-			double dif = (pos.x - prevDragLoc.x)/bounds.width;
+			double dif = (pos.getX() - prevDragLoc.x)/bounds.width;
 			double prevWidth = rightEdge - leftEdge;
 			rightEdge += dif;
 			leftEdge += dif;
@@ -252,8 +253,8 @@ public class ARGSliderFocalElement extends FigureElement {
 				rightEdge = 1.0;
 			}
 			
-			prevDragLoc.x = pos.x;
-			prevDragLoc.y = pos.y;
+			prevDragLoc.x = pos.getX();
+			prevDragLoc.y = pos.getY();
 			fireNewRangeEvent();
 		}
 		
