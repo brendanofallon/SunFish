@@ -69,6 +69,7 @@ public class WelcomePanel extends JPanel {
 	public void clearText() {
 		textArea.setText("");
 	}
+	
 	public void paintComponent(Graphics g) {
 		Graphics2D g2d = (Graphics2D)g;
 		

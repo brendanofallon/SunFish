@@ -623,15 +623,6 @@ public class TreeDisplay extends Display {
             }
         });
 		optionsPane.addComponent(scaleBox);		
-	
-		//Do we really want a rescale field here?
-//		JTextField scaleField = new JTextField();
-//		scaleField.setText("1.0");
-//		scaleField.addActionListener(new java.awt.event.ActionListener() {
-//            public void actionPerformed(java.awt.event.ActionEvent evt) {
-//                scaleFieldAction();
-//            }
-//        });
 		
 		JLabel nodetext = new JLabel("Label type: ");
 		nodetext.setFont(displayFont);
@@ -664,6 +655,7 @@ public class TreeDisplay extends Display {
 		String[] fontChoices = fontNames; 
 		fontFaceList = new JComboBox(fontChoices);
 		fontFaceList.setRenderer(new FontListCellRenderer(fontChoices,  fontSizeChoices[7]) );
+		//fontFaceList.setMinimumSize(new Dimension(50, 24));
 		fontFaceList.setSelectedIndex( findDefaultFontIndex() );
 		fontFaceList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

@@ -228,7 +228,9 @@ public class MultiTreeDisplay extends Display {
 		
 		String[] fontChoices = fontNames; 
 		fontFaceList = new JComboBox(fontChoices);
-		fontFaceList.setRenderer(new FontListCellRenderer(fontChoices,  fontSizeChoices[7]) );
+		fontFaceList.setRenderer(new FontListCellRenderer(fontChoices,  fontSizeChoices[9]) );
+		//fontFaceList.setMinimumSize(new Dimension(50, 24));
+		fontFaceList.setPreferredSize(new Dimension(120, 24));
 		fontFaceList.setSelectedIndex( findDefaultFontIndex() );
 		fontFaceList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

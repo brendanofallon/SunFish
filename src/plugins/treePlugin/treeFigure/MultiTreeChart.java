@@ -362,6 +362,7 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 		int boxHeight = (int)(height/(double)rows);
 		Iterator<DrawableTree> treeit = currentTrees.iterator();
 		int count = currentTrees.getLeftIndex();
+		
 		for(int row=0; row<rows; row++) {
 			boundsRect.y = row*boxHeight;
 			for(int col=0; col<cols; col++) {
@@ -378,7 +379,7 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 						double tx = treeDrawer.translatePixelToTreeX(selectRect.x);
 						double ty = treeDrawer.translatePixelToTreeY(selectRect.y - boundsRect.y);
 						translatedRect.setRect(tx, ty, twidth, theight);
-						//boolean selected = tree.setSelectedNodes(translatedRect);
+						tree.setSelectedNodes(translatedRect);
 					}
 					
 					treeDrawer.paint(g2d, boundsRect);

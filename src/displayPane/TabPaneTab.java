@@ -10,6 +10,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -38,12 +39,12 @@ public class TabPaneTab extends JPanel {
 	
 	public TabPaneTab(String name, SunFishFrame cfFrame, ImageIcon icon)  {
 		super();
-		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		this.pane = cfFrame.getDisplayPane();
 		this.cfFrame = cfFrame;
 		this.icon = icon;
 		setBackground(new Color(1.0f, 1.0f, 1.0f, 0.0f));
-
+		
 		int suffixPos = name.lastIndexOf(".");
 		String shortName = name.substring(0, name.length());
 		if (suffixPos>0)
@@ -69,8 +70,10 @@ public class TabPaneTab extends JPanel {
 		pop.setToolTipText("Display in new window");
 		
 		TabMouseListener tbListener = new TabMouseListener(this);
-		title.addMouseListener(tbListener);
+		this.addMouseListener(tbListener);
 		close.addMouseListener(tbListener);
+		pop.addMouseListener(tbListener);
+		title.addMouseListener(tbListener);
 		
 		add(close);
 		add(title);
@@ -110,6 +113,19 @@ public class TabPaneTab extends JPanel {
 		}
 	}
 	
+	private void setShowIcons(boolean show) {
+		if (show) {
+			close.setIcon(closeEnabled);
+			pop.setIcon(popEnabled);
+		}
+		else {
+			close.setIcon(closeDisabled);
+			pop.setIcon(popDisabled);
+			revalidate();
+			repaint();
+		}
+	}
+	
 	/**
 	 * Convenience method that returns the component associated with this tab. 
 	 * @return
@@ -137,9 +153,9 @@ public class TabPaneTab extends JPanel {
 	
 	private class TabMouseListener implements MouseListener {
 		
-		JPanel tab;
+		TabPaneTab tab;
 		
-		public TabMouseListener(JPanel tab) {
+		public TabMouseListener(TabPaneTab tab) {
 			this.tab = tab;
 		}
 		
@@ -151,21 +167,11 @@ public class TabPaneTab extends JPanel {
 		}
 
 		public void mouseEntered(MouseEvent arg0) {
-			close.setIcon(closeEnabled);
-			pop.setIcon(popEnabled);
-
-			close.repaint();
-			pop.repaint();
-			repaint();
+			setShowIcons(true);
 		}
 
 		public void mouseExited(MouseEvent arg0) {
-			close.setIcon(closeDisabled);
-			pop.setIcon(popDisabled);
-			pane.repaint(0, 0, pane.getWidth(), 20);
-			close.repaint();
-			pop.repaint();
-			repaint();
+			setShowIcons(false);
 		}
 
 		public void mousePressed(MouseEvent arg0) {		
