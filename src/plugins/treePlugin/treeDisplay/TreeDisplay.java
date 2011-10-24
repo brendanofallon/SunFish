@@ -704,7 +704,7 @@ public class TreeDisplay extends Display {
 		branchRoundnessSlider.setFont(nullFont);
 		branchRoundnessSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) {
-				adjustBranchArc(branchRoundnessSlider.getValue());
+				adjustBranchArc();
 			}		
 		});
 		JLabel roundnessLabel = new JLabel("Branch arc:");
@@ -972,7 +972,7 @@ public class TreeDisplay extends Display {
 	 * for the definition of 'value'
 	 * @param value
 	 */
-	protected void adjustBranchArc(int value) {
+	protected void adjustBranchArc() {
 		List<DrawableNode> nodes = getAllSelectedNodes();
 		if (nodes.size()==0) {
 			for(DrawableTree tree : chart.getTrees()) {
@@ -983,6 +983,7 @@ public class TreeDisplay extends Display {
 		
 		int val = branchRoundnessSlider.getValue();
 		BranchPainter branch;
+		System.out.println("Adjusting branch arc value to : " + val);
 		if (val>0)
 			branch = new CurvedBranchPainter((double)val/100.0);
 		else 
@@ -990,7 +991,7 @@ public class TreeDisplay extends Display {
 		for(DrawableNode dn : nodes ) {
 			dn.setBranchPainter(branch);
 		}
-		repaint();
+		chart.repaint();
 	}
 
 	protected void showErrorBarBoxAction() {
@@ -1086,10 +1087,25 @@ public class TreeDisplay extends Display {
 		for(DrawableTree tree : trees) {
 			DrawableNode root = (DrawableNode)tree.getRoot();
 			switch (treeTypeBox.getSelectedIndex()) {
-			case 0:	tree = new SquareTree( root); break;
-			case 1: tree = new EqualAngleTree( root); break;
+			case 0:	
+				tree = new SquareTree( root); 
+				break;
+			case 1: 
+				tree = new EqualAngleTree( root); 
+				break;
 			}
 			chart.addTree(tree);
+		}
+		
+		//EqualAngleTrees must use line branch painter and have scale bar, not axis
+		if (treeTypeBox.getSelectedIndex()==1) {
+			branchRoundnessSlider.setValue(0);
+			adjustBranchArc();
+
+			if (scaleBox.getSelectedIndex()==2) {
+				scaleBox.setSelectedIndex(1);
+				chart.setScaleType( scaleBox.getSelectedIndex() );
+			}
 		}
 		
 		TreeUndoableAction typeAction = new TreeUndoableAction(this, treesBefore, "Tree type");
