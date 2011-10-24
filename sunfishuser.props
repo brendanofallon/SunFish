@@ -1,4 +1,5 @@
 #--- nothing to report ----
+<<<<<<< HEAD
 #Sat Oct 22 07:13:19 PDT 2011
 fileTree.recentItem.2=/Users/brendano/akey_data/116.44e6_masked.fas
 fileTree.recentItem.1=/Users/brendano/akey_data/10.28e6_L50K.fas
@@ -16,3 +17,29 @@ fileTree.recentItem.5=/home/brendan/workspace/SunFish/testfiles/sample.trees
 fileTree.recentItem.4=/home/brendan/workspace/SunFish/testfiles/testsomething.tsv
 fileTree.recentItem.3=/Users/brendano/akey_data/103.24e6_masked.fas
 display.number=1
+=======
+#Thu Sep 29 15:08:25 PDT 2011
+fileTree.recentItem.5=/Users/brendano/akey_data/29.6e6_L50K_lastARG.xml
+fileTree.recentItem.4=/Users/brendano/akey_data/16.167_testmask.fas
+this.path=/Users/brendano/workspace/SunFish2/
+fileTree.block.3=/Users/brendano/workspace/ACG
+fileTree.recentItem.3=/Users/brendano/akey_data/10.28e6_L50K.fas
+fileTree.block.2=/Users/brendano/treesimj_runs
+fileTree.recentItem.2=/Users/brendano/workspace/ACG/gapTest.fas
+fileTree.block.1=/Users/brendano/akey_data
+fileTree.recentItem.1=/Users/brendano/workspace/ACG/ConsensusTree500.tre
+fileTree.block.0=/Users/brendano/workspace/SunFish2/testfiles
+displayPane.height=417
+fileTree.recentItem.0=/Users/brendano/workspace/ACG/ConsensusTree1000.tre
+display.number=5
+display.4=/Users/brendano/akey_data/29.6e6_L50K_lastARG.xml
+display.3=/Users/brendano/akey_data/16.167_testmask.fas
+display.2=/Users/brendano/akey_data/10.28e6_L50K.fas
+display.1=/Users/brendano/workspace/ACG/ConsensusTree500.tre
+fileTreePanel.width=301
+display.0=/Users/brendano/workspace/ACG/ConsensusTree1000.tre
+frame.height=767
+fileTree.blocknum=4
+frame.width=1666
+iconPath=icons/
+>>>>>>> 6d215d42303242147e50c03e6b9954184d3a8626

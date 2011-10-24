@@ -11,10 +11,13 @@ import java.awt.Rectangle;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+
+import fileTree.FileTreePanel;
 
 /**
  * This panel is the first one displayed in the DisplayPane when the application opens. Not really sure
@@ -27,8 +30,11 @@ public class WelcomePanel extends JPanel {
 	JScrollPane textScrollPane;
 	
 	JTextArea textArea;
-	Color fontColor = new Color(0.3f, 0.3f, 0.3f, 0.7f);
-	Font font = new Font("Sans", Font.PLAIN, 12);
+	Color fontColor = new Color(0.15f, 0.15f, 0.15f, 0.8f);
+	Font font = new Font("Sans", Font.PLAIN, 11);
+	int topInset = 150;
+	
+	static final ImageIcon sunfishname = getIcon("icons/sunfishname.png");
 	
 	public WelcomePanel() {
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -38,8 +44,6 @@ public class WelcomePanel extends JPanel {
 		textArea.setOpaque(false);
 		textArea.setFont(font);
 		textArea.setForeground(fontColor);
-		
-
 		
 		textScrollPane = new JScrollPane(textArea);
 		textScrollPane.setPreferredSize(new Dimension(500, 200));
@@ -51,10 +55,22 @@ public class WelcomePanel extends JPanel {
 		textScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		textScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-		this.setBorder(BorderFactory.createEmptyBorder(200, 10, 10, 50));
+		this.setBorder(BorderFactory.createEmptyBorder(topInset, 10, 10, 50));
 		this.add(textScrollPane);
 		this.add(Box.createHorizontalGlue());
 		this.setOpaque(false);
+	}
+	
+	public static ImageIcon getIcon(String url) {
+		ImageIcon icon = null;
+		try {
+			java.net.URL imageURL = WelcomePanel.class.getResource(url);
+			icon = new ImageIcon(imageURL);
+		}
+		catch (Exception ex) {
+			SunFishFrame.getSunFishFrame().getLogger().warning("Error loadind icon from resouce : " + ex);
+		}
+		return icon;
 	}
 	
 	/**
@@ -70,12 +86,25 @@ public class WelcomePanel extends JPanel {
 		textArea.setText("");
 	}
 	
-	public void paintComponent(Graphics g) {
+	public void paint(Graphics g) {
 		Graphics2D g2d = (Graphics2D)g;
 		
-		GradientPaint gp = new GradientPaint(1f, 1f, new Color(0.9f, 0.9f, 0.9f), 1f, getHeight(), Color.white);
-		g2d.setPaint(gp);
+//		GradientPaint gp = new GradientPaint(1f, 1f, new Color(0.9f, 0.9f, 0.9f), 1f, getHeight(), Color.white);
+//		g2d.setPaint(gp);
+//		g2d.fillRect(0, 0, getWidth(), getHeight());
+		g2d.setColor(Color.white);
 		g2d.fillRect(0, 0, getWidth(), getHeight());
+		
+		super.paint(g);
+		
+		GradientPaint gp = new GradientPaint(1f, Math.max(50, getHeight()-250), new Color(0.92f, 0.92f, 0.92f), 1f, Math.max(200, getHeight()-100), new Color(1f, 1f, 1f, 0.0f));
+		g2d.setPaint(gp);
+		g2d.fillRect(0, 0, getWidth(), Math.max(getHeight()-10, 150));
+		
+		if (sunfishname != null) {
+			g2d.drawImage(sunfishname.getImage(), getWidth()- sunfishname.getIconWidth()-50, 50, null);
+		}
+		
 	}
 	
 		
