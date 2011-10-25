@@ -77,8 +77,8 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 	boolean advancing = false;
 	boolean retracting = false;
 	double advanceOffset = 0;	//Holds current advance offset
-	int moveTime = 800; //Time to move advance/retract in ms
-	int timerDelay = moveTime/40;		//Delay in ms between calls to change advance offset + redraw tree
+	int moveTime = 500; //Time to move advance/retract in ms
+	int timerDelay = moveTime/60;		//Delay in ms between calls to change advance offset + redraw tree
 	long startTime = 0;
 	long elapsedTime = 0;
 	
@@ -245,10 +245,6 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 		drawBoundsSet = false;
 	}
 	
-	private void recalculateBounds() {
-		
-	}
-	
 	/**
 	 * Returns true if this is in the middle of an animation and we can't change state
 	 */
@@ -272,11 +268,15 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 			advancing = true;
 			advanceOffset = 0;
 			
-			cols++; //Since we actually want to draw an extra tree, we need to add an extra column
-			treeImage = this.getGraphicsConfiguration().createCompatibleImage((int)(getWidth()*(double)currentTrees.size()/(double)(currentTrees.size()-1.0)), getHeight());
-			Graphics2D treeGraphics = treeImage.createGraphics();
-			paintTrees(treeGraphics, 0, 0, treeImage.getWidth(), treeImage.getHeight());
-			cols--; //.. subtract off the extra column
+			//treeImage should already be drawn, but if not we draw it again 
+			if (treeImage == null) {
+				cols++; //Since we actually want to draw an extra tree, we need to add an extra column
+				treeImage = this.getGraphicsConfiguration().createCompatibleImage((int)(getWidth()*(double)currentTrees.size()/(double)(currentTrees.size()-1.0)), getHeight());
+				Graphics2D treeGraphics = treeImage.createGraphics();
+				paintTrees(treeGraphics, 0, 0, treeImage.getWidth(), treeImage.getHeight());
+				treeGraphics.dispose();
+				cols--; //.. subtract off the extra column
+			}
 			
 			timer.start();
 		}
@@ -302,11 +302,14 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 			advanceOffset = 0;
 			retracting = true;
 			
-			cols++; //Since we actually want to draw an extra tree, we need to add an extra column
-			treeImage = this.getGraphicsConfiguration().createCompatibleImage((int)(getWidth()*(double)currentTrees.size()/(double)(currentTrees.size()-1.0)), getHeight());
-			Graphics2D treeGraphics = treeImage.createGraphics();
-			paintTrees(treeGraphics, 0, 0, treeImage.getWidth(), treeImage.getHeight());
-			cols--; //.. subtract off the extra column
+			if (treeImage == null) {
+				cols++; //Since we actually want to draw an extra tree, we need to add an extra column
+				treeImage = this.getGraphicsConfiguration().createCompatibleImage((int)(getWidth()*(double)currentTrees.size()/(double)(currentTrees.size()-1.0)), getHeight());
+				Graphics2D treeGraphics = treeImage.createGraphics();
+				paintTrees(treeGraphics, 0, 0, treeImage.getWidth(), treeImage.getHeight());
+				treeGraphics.dispose();
+				cols--; //.. subtract off the extra column
+			}
 			
 			timer.start();
 		}
@@ -399,11 +402,8 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 	
 	public void paintComponent(Graphics g) {
 			Graphics2D g2d = (Graphics2D)g;
-			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-	                RenderingHints.VALUE_ANTIALIAS_ON);
 			//Rectangle treeSelectionBox = null;
 
-			
 			if (mouseDrag) {
 				g2d.setColor(Color.white);
 				g2d.fill(prevRect);
@@ -425,8 +425,10 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 					elapsedTime = System.currentTimeMillis()-startTime;
 				
 				double fraction = (double)(elapsedTime)/(double)moveTime; 
-				double oneMinusFraction = 1.0-fraction;
-				advanceOffset = 1.0-oneMinusFraction*oneMinusFraction*oneMinusFraction;
+				double fsquared = 0.5*fraction*fraction;
+				advanceOffset = fsquared*fsquared/(0.06 + fsquared*fsquared);
+				
+				//System.out.println(fraction + ", " + advanceOffset);
 				
 				if (advanceOffset>1)
 					advanceOffset = 1;
@@ -442,6 +444,10 @@ public class MultiTreeChart extends Chart implements MouseListener, MouseMotionL
 				
 			}
 			else { 
+				//Dont draw with antialiasing unless we're in normal (non-advancing or retracting) mode
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+		                RenderingHints.VALUE_ANTIALIAS_ON);
+				
 				paintTrees(g2d, 0, 0, getWidth(), getHeight());
 			}//Not advancing or retracting, just draw trees normally			
 
