@@ -16,25 +16,14 @@ import java.awt.Stroke;
  */
 public abstract class SeriesElement extends FigureElement {
 	
-	//Marker types... maybe this should be an enum?
-	public static final String LINES = "Lines";
-	public static final String POINTS = "Points";
-	public static final String POINTS_AND_LINES = "Points and lines";
-	public static final String BOXES = "Boxes";
-	
 	protected AbstractSeries series; //Stores the data we're representing
 	
 	protected Color color;
-	
-	//This is the default mode 
-	protected String currentMode = LINES;
 	
 	//List of marker shapes
 	//If you change this list, you must also add corresponding code to drawMarker
 	public static final String[] markerTypes = {"Circle", "Square", "Diamond", "Plus", "X"};
 	
-	//List of ways in which to draw the points, aka 'modes'
-	public static final String[] styleTypes = {XYSeriesElement.LINES, XYSeriesElement.POINTS, XYSeriesElement.POINTS_AND_LINES, XYSeriesElement.BOXES };
 	
 	//The strokes used to paint the line and the highlighted line
 	BasicStroke normalStroke;
@@ -67,6 +56,15 @@ public abstract class SeriesElement extends FigureElement {
 	
 	public abstract double getMaxX();
 	
+	/**
+	 * Draw the small 'preview' of this series at the given location. The preview is the small
+	 * image used to identify this series in the legend
+	 * @param g
+	 * @param x
+	 * @param y
+	 */
+	public abstract void drawPreview(Graphics2D g, int x, int y);
+	
 	
 	public AbstractSeries getSeries() {
 		return series;
@@ -82,14 +80,31 @@ public abstract class SeriesElement extends FigureElement {
 		highlightStroke = new BasicStroke(width+highlightWidthIncrease);		
 	}
 	
-	public String getType() {
-		return currentMode;
+	/**
+	 * Set the line stroke property to be the given stroke. The highlight stroke is automagically set to be something a bit wider
+	 * @param newStroke
+	 */
+	public void setStroke(BasicStroke newStroke) {
+		normalStroke = newStroke;
+		highlightStroke = new BasicStroke(newStroke.getLineWidth()+highlightWidthIncrease, newStroke.getEndCap(), newStroke.getLineJoin(), newStroke.getMiterLimit(), newStroke.getDashArray(), newStroke.getDashPhase());
 	}
 	
+	/**
+	 * Primary color of this series element
+	 * @return
+	 */
 	public Color getLineColor() {
 		return color;
 	}
 
+	/**
+	 * The default width of the line used to draw this series - this is interpreted somewhat differently
+	 * by different element types
+	 * @return
+	 */
+	public float getLineWidth() {
+		return normalStroke.getLineWidth();
+	}
 	
 	/**
 	 * Return the name of the series
@@ -114,32 +129,6 @@ public abstract class SeriesElement extends FigureElement {
 	public void setLineColor(Color c) {
 		color = c;
 		highlightColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 150);
-	}
-	
-	
-	/**
-	 * Changes the 'mode' (how the series is represnted, e.g. lines, points, boxes, etc)
-	 * @param newMode
-	 */
-	public void setMode(String newMode) {
-		if (modeIsValid(newMode)) {
-			currentMode = newMode;
-		}
-		else {
-			throw new IllegalArgumentException("Cannot set a series mode to : " + newMode);
-		}
-	}
-	
-	protected boolean modeIsValid(String mode) {
-		if (mode.equals(XYSeriesElement.LINES) || 
-			mode.equals(XYSeriesElement.POINTS) || 
-			mode.equals(XYSeriesElement.POINTS_AND_LINES) || 
-			mode.equals(XYSeriesElement.BOXES)) 
-		{
-			return true;	
-		}
-		else
-			return false;
 	}
 	
 	

@@ -168,12 +168,13 @@ public class LegendConfigFrame extends JFrame {
 		panel.add(Box.createHorizontalStrut(12));
 		
         final JComboBox styleBox = new JComboBox();
-        styleBox.setModel(new javax.swing.DefaultComboBoxModel(XYSeriesElement.styleTypes));
-        styleBox.setSelectedIndex(series.indexForMode());
+        styleBox.setModel(new javax.swing.DefaultComboBoxModel(figParent.getSeriesManager().getElementTypeNames().toArray()));
+        styleBox.setSelectedIndex(0);
         styleBox.setFont(panelFont);
         styleBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				series.setMode((String)(styleBox.getSelectedItem()));
+				//TODO perform swap of elements here
+				//series.setMode((String)(styleBox.getSelectedItem()));
 				figParent.repaint();
 			}
         });

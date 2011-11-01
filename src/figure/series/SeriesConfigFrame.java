@@ -25,7 +25,6 @@ public class SeriesConfigFrame extends javax.swing.JFrame {
 		
 	    public SeriesConfigFrame(XYSeriesElement ser, XYSeriesFigure parent) {
 	        this.seriesOwner = ser;
-	        
 	        this.parent = parent;
 	        
 	        initComponents();
@@ -76,7 +75,7 @@ public class SeriesConfigFrame extends javax.swing.JFrame {
 
 	        nameField.setText("jTextField1");
 
-	        styleBox.setModel(new javax.swing.DefaultComboBoxModel(XYSeriesElement.styleTypes));
+	        styleBox.setModel(new javax.swing.DefaultComboBoxModel(parent.getSeriesManager().getElementTypeNames().toArray()));
 
 	        jLabel5.setText("Line color :");
 
@@ -223,20 +222,20 @@ public class SeriesConfigFrame extends javax.swing.JFrame {
 		}
 
 
-		public void display(String name, 
-							String style, 
-							Color lineColor, 
-							int lineWidth, 
-							int markerSize, 
-							String markerType) {
-	    	nameField.setText(name);
+		public void display(XYSeriesElement el) {
+	    	nameField.setText(el.getName() );
 	    	
-	    	try {
-	    		styleBox.setSelectedItem(style);
+	    	if (el instanceof MarkerLineElement) {
+	    		styleBox.setEnabled(true);
+	    		styleBox.setSelectedItem( ((MarkerLineElement)el).getMarkerType() );
+	    		markerSizeSlider.setEnabled(true);
+	    		markerSizeSlider.setValue( ((MarkerLineElement)el).getMarkerSize());
 	    	}
-	    	catch (IllegalArgumentException ex) {
-	    		System.out.println("Can't set the series style to : " + style);
+	    	else {
+	    		styleBox.setEnabled(false);
+	    		styleBox.setEnabled(false);
 	    	}
+	    	
 	    	
 	    	try {
 	    		markerTypeBox.setSelectedItem(markerType);
@@ -245,10 +244,10 @@ public class SeriesConfigFrame extends javax.swing.JFrame {
 	    		System.out.println("Can't set the marker type to : " + markerType);
 	    	}
 	    	
-	    	lineWidthSlider.setValue(lineWidth);
-	    	markerSizeSlider.setValue(markerSize);
+	    	lineWidthSlider.setValue( el.getLineWidth() );
+	    	
 
-	    	lineColorButton.setColor(lineColor);
+	    	lineColorButton.setColor( el.getLineColor() );
 	    	setInitialOptions();
 	    	setVisible(true);
 	    }

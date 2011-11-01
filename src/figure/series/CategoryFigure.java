@@ -35,14 +35,14 @@ public class CategoryFigure extends XYSeriesFigure {
 	public void placeBoxSeries() {
 		int count = 0;
 		for(SeriesElement series : getSeriesElements()) {
-			if (series.getType().equals(  XYSeriesElement.BOXES)) {
+			if (series instanceof BoxSeriesElement) {
 				count++;
 			}
 		}
 		
 		int index = 0;
 		for(SeriesElement series : getSeriesElements()) {
-			if (series.getType().equals(  XYSeriesElement.BOXES)) {
+			if (series instanceof BoxSeriesElement) {
 				series.setBoxWidthAndOffset(count*2, (double)(index-(count-1.0)/2.0));
 				index++;
 			}
@@ -58,24 +58,23 @@ public class CategoryFigure extends XYSeriesFigure {
 	 * @return newElement The newly created element
 	 */
 	public XYSeriesElement addDataSeries(CategorySeries newSeries) {
-		XYSeriesElement newElement = new CatSeriesElement(this, axes, newSeries);
-		
-		newElement.setMode(SeriesElement.BOXES);
-		newElement.setLineColor( colorList[ seriesElements.size() % colorList.length] );
-		seriesElements.add(newElement);
-		addElement(newElement);
-		newElement.setCanConfigure(true);
-		
-		//System.out.println("Setting color index to: " + seriesElements.size() % colorList.length + " which is color: " + colorList[ seriesElements.size() % colorList.length]);
-		placeBoxSeries();
-		inferBoundsFromCurrentSeries();
-		setXMin(-0.5);
-		setXMax( Math.max( newSeries.size()-0.5, 0));
-		axes.setXTickSpacing(1.0); //Required for proper painting of x label list
-		
-		if (seriesElements.size()>1) 
-			setDrawLegend(true);
-		
+//		XYSeriesElement newElement = new BoxSeriesElement(this, axes, newSeries);
+//		
+//		newElement.setMode(SeriesElement.BOXES);
+//		newElement.setLineColor( colorList[ seriesElements.size() % colorList.length] );
+//		seriesElements.add(newElement);
+//		addElement(newElement);
+//		newElement.setCanConfigure(true);
+//		
+//		placeBoxSeries();
+//		inferBoundsFromCurrentSeries();
+//		setXMin(-0.5);
+//		setXMax( Math.max( newSeries.size()-0.5, 0));
+//		axes.setXTickSpacing(1.0); //Required for proper painting of x label list
+//		
+//		if (seriesElements.size()>1) 
+//			setDrawLegend(true);
+//		
 		return newElement;
 	}
 	

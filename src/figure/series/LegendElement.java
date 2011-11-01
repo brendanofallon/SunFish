@@ -96,24 +96,25 @@ public class LegendElement extends FigureElement {
 		for(SeriesElement el : seriesParent.getSeriesElements()) {
 			if (el.getSeries().size()>0) {
 				g.setColor(el.getLineColor());
-				if (el.getType() == XYSeriesElement.LINES)
-					g.drawLine(round(bounds.x*xFactor+4), yPosn.get(i)-5, round(bounds.x*xFactor+markerSpace-4), yPosn.get(i)-5);
-
-				if (el.getType() == XYSeriesElement.POINTS_AND_LINES) {
-					g.drawLine(round(bounds.x*xFactor+4), yPosn.get(i)-5, round(bounds.x*xFactor+markerSpace-4), yPosn.get(i)-5);
-					el.drawMarker(g, round(bounds.x*xFactor+10), yPosn.get(i)-5);
-				}
-
-				if (el.getType() == XYSeriesElement.POINTS) {
-					//g.drawLine(round(bounds.x*xFactor+4), yPosn.get(i)-5, round(bounds.x*xFactor+markerSpace-4), yPosn.get(i)-5);
-					el.drawMarker(g, round(bounds.x*xFactor+10), yPosn.get(i)-5);
-				}
-
-				if (el.getType() == XYSeriesElement.BOXES) {
-					g.setColor(el.getLineColor());
-					g.fillRect(round(bounds.x*xFactor+3), yPosn.get(i)-6, round(markerSpace/2.0-3), 6);
-					g.fillRect(round(bounds.x*xFactor+1+markerSpace/2.0), yPosn.get(i)-10, round(markerSpace/2.0-4), 10);
-				}
+				el.drawPreview(g, round(bounds.x*xFactor+2), yPosn.get(i));
+//				if (el.getType() == XYSeriesElement.LINES)
+//					g.drawLine(round(bounds.x*xFactor+4), yPosn.get(i)-5, round(bounds.x*xFactor+markerSpace-4), yPosn.get(i)-5);
+//
+//				if (el.getType() == XYSeriesElement.POINTS_AND_LINES) {
+//					g.drawLine(round(bounds.x*xFactor+4), yPosn.get(i)-5, round(bounds.x*xFactor+markerSpace-4), yPosn.get(i)-5);
+//					el.drawMarker(g, round(bounds.x*xFactor+10), yPosn.get(i)-5);
+//				}
+//
+//				if (el.getType() == XYSeriesElement.POINTS) {
+//					//g.drawLine(round(bounds.x*xFactor+4), yPosn.get(i)-5, round(bounds.x*xFactor+markerSpace-4), yPosn.get(i)-5);
+//					el.drawMarker(g, round(bounds.x*xFactor+10), yPosn.get(i)-5);
+//				}
+//
+//				if (el.getType() == XYSeriesElement.BOXES) {
+//					g.setColor(el.getLineColor());
+//					g.fillRect(round(bounds.x*xFactor+3), yPosn.get(i)-6, round(markerSpace/2.0-3), 6);
+//					g.fillRect(round(bounds.x*xFactor+1+markerSpace/2.0), yPosn.get(i)-10, round(markerSpace/2.0-4), 10);
+//				}
 
 				g.setColor(Color.black);
 				g.drawString(el.getName(), round(bounds.x*xFactor) + markerSpace, yPosn.get(i));

@@ -229,14 +229,14 @@ public class XYSeriesFigure extends SeriesFigure {
 	public void placeBoxSeries() {
 		int count = 0;
 		for(SeriesElement series : getSeriesElements()) {
-			if (series.getType().equals(  XYSeriesElement.BOXES)) {
+			if (series instanceof BoxSeriesElement) {
 				count++;
 			}
 		}
 		
 		int index = 0;
 		for(SeriesElement series : getSeriesElements()) {
-			if (series.getType().equals(  XYSeriesElement.BOXES)) {
+			if (series instanceof BoxSeriesElement) {
 				series.setBoxWidthAndOffset(count, (double)(index-(count-1.0)/2.0));
 				index++;
 			}
@@ -352,7 +352,7 @@ public class XYSeriesFigure extends SeriesFigure {
 	 * @return newElement The newly created element
 	 */
 	public XYSeriesElement addDataSeries(XYSeries newSeries) {
-		XYSeriesElement newElement = new XYSeriesElement(newSeries, axes, this);
+		XYSeriesElement newElement = new LineSeriesElement(newSeries, this);
 		newElement.setLineColor( colorList[ seriesElements.size() % colorList.length] );
 		seriesElements.add(newElement);
 		addElement(newElement);
@@ -441,7 +441,7 @@ public class XYSeriesFigure extends SeriesFigure {
 		if (toRemove != null) {
 			seriesElements.remove(toRemove);
 			elements.remove(toRemove);
-			if (toRemove.getType().equals(  XYSeriesElement.BOXES)) {
+			if (toRemove instanceof BoxSeriesElement) {
 				placeBoxSeries();
 			}
 			fireSeriesRemovedEvent(toRemove.getSeries());

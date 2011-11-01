@@ -13,6 +13,8 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import errorHandling.ErrorWindow;
+
 
 /**
  * An element that draws a series of points in x-y space. Different markers can be placed
@@ -22,7 +24,7 @@ import java.awt.geom.Rectangle2D;
  * @author brendan
  *
  */
-public class XYSeriesElement extends SeriesElement {
+public abstract class XYSeriesElement extends SeriesElement {
 	
 	protected XYSeries xySeries;
 	GeneralPath pathShape;
@@ -88,16 +90,6 @@ public class XYSeriesElement extends SeriesElement {
 		yvals = new int[5];
 	}
 	
-	
-	/**
-	 * Set the line stroke property to be the given stroke. The highlight stroke is automagically set to be something a bit wider
-	 * @param newStroke
-	 */
-	public void setStroke(BasicStroke newStroke) {
-		normalStroke = newStroke;
-		highlightStroke = new BasicStroke(newStroke.getLineWidth()+highlightWidthIncrease, newStroke.getEndCap(), newStroke.getLineJoin(), newStroke.getMiterLimit(), newStroke.getDashArray(), newStroke.getDashPhase());
-	}
-	
 	public XYSeries getSeries() {
 		return xySeries;
 	}
@@ -129,23 +121,6 @@ public class XYSeriesElement extends SeriesElement {
 		return xySeries.getMinX();
 	}
 	
-	
-	public int indexForMode() {
-		for(int i=0; i<styleTypes.length; i++) {
-			if (styleTypes[i].equals(currentMode)) {
-				return i;
-			}
-		}
-		
-		throw new IllegalStateException("Illegal current mode in XYSeries Element : " + currentMode);		
-	}
-	
-	
-	/**
-	 * Returns the index of the current marker type in markerTypes. 
-	 * @param markerType
-	 * @return The index of the current marker type in markerTypes
-	 */
 	public int indexForMarkerType() {
 		for(int i=0; i<markerTypes.length; i++) {
 			if (currentMarkerType.equals(markerTypes[i])) {
@@ -178,7 +153,7 @@ public class XYSeriesElement extends SeriesElement {
 	}
 	
 	public void popupConfigureTool(java.awt.Point pos) {
-		configFrame.display(getName(), currentMode, getLineColor(), round(((BasicStroke)normalStroke).getLineWidth()), markerSize, currentMarkerType);
+		configFrame.display(this);
 	}
 	
 	/**
@@ -200,15 +175,7 @@ public class XYSeriesElement extends SeriesElement {
 		
 		currentMarkerType = ops.markerType;
 		markerSize = ops.markerSize;
-		//Make sure lines are painted on top of boxes
-		if (currentMode != ops.type && parent instanceof XYSeriesFigure) {
-			resort = true;
-			if (ops.type == BOXES) 
-				setZPosition(-5);
-			else 
-				setZPosition(0);
-		}
-		currentMode = ops.type;
+		
 		
 		if (resort) {
 			((XYSeriesFigure)parent).getElementList().resort();
@@ -230,115 +197,117 @@ public class XYSeriesElement extends SeriesElement {
 		dataBoundsSet = true;
 	}
 	
-	private void regenerateShape() {
-		if (xySeries.size()==0) {
-			pathShape = new GeneralPath();
-			return;
-		}
-		
-		if (pathShape == null) {
-			pathShape = new GeneralPath(new Line2D.Double(xySeries.getX(0), xySeries.getY(0), xySeries.getX(1), xySeries.getY(1)) );
-		}
-		else 
-			pathShape.reset();
-		
-		if (currentMode == LINES || currentMode == POINTS_AND_LINES || currentMode == POINTS) {
-			if (xySeries.size()>1) {
-				double x1 = axes.dataXtoBoundsX(xySeries.getX(0)  );
-				double y1 = axes.dataYtoBoundsY(xySeries.getY(0) );
-				double x2 = axes.dataXtoBoundsX( xySeries.getX(1));
-				double y2 = axes.dataYtoBoundsY( xySeries.getY(1) );
-				pathShape = new GeneralPath(new Line2D.Double(x1, y1, x2, y2) );
-				
-				boolean connect = true;
-				
-				Point2D p;
-				for(int i=1; i<xySeries.size(); i++) {
-					p = xySeries.get(i);
-					x1 = axes.dataXtoBoundsX( p.getX() );
-					y1 = axes.dataYtoBoundsY( p.getY() );
-					
-					//We've moved from a undrawn region into an OK one, so just move the 'pointer'
-					//to the new site
-					if (!connect && !(Double.isNaN(y1))) {
-						pathShape.moveTo(x1, y1);
-						connect = true;
-					}
-					
-					//Moving from a good region to an undrawn one
-					if (connect && Double.isNaN(y1)) {
-						connect = false;
-					}
-					
-					
-					if (connect)
-						pathShape.lineTo(x1, y1);
-				}
-			}
-		}
-				
-		
-//		if (currentMode == BOXES) {
-//			// Currently there is no pathShape that defines the boundaries for BOXES mode. We use getboxForIndex(...)
-//			// to calculate a rectangle corresponding to the box for a particular index in the seiries, and that same
-//			// rectangle is used in the contains(x, y) method. 
-//		}
-	
-	}
 	
 	/**
-	 * Calculate the standard width of the rectangle used to draw a box, if we're drawing boxes. The
-	 * default here is to pack the boxes tightly, but that can be controlled if the boxWidthDivisor
-	 * variable is set.
-	 * @return
+	 * Called when we must recompute the pathShape, typically because the 
+	 * underlying series has changed somehow
 	 */
-	private double calculateBoxWidth() {
-		double boxesShowing = xySeries.size()*(axes.maxXVal-axes.minXVal)/(xySeries.getMaxX()-xySeries.getMinX());
-		double boxWidth = axes.getGraphAreaBounds().width / boxesShowing / (double)boxWidthDivisor;
-		//System.out.println("Series size: " + xySeries.size() + " boxes showing: " + boxesShowing + " Box width: " + boxWidth);
-		return boxWidth;
-	}
+	protected abstract void regenerateShape();
 	
-	public boolean contains(double x, double y) {		
-		
-		if (currentMode == POINTS_AND_LINES || currentMode == LINES) {
-			double dataX = axes.boundsXtoDataX(x);
-			
-			lineRect.setRect(x*xFactor-4, y*yFactor-4, 7, 7);
-			Point2D[] line = xySeries.getLineForXVal(dataX);
-			if (line==null || Double.isNaN(line[0].getY()) || Double.isNaN(line[1].getY())) {
-				return false;
-			}
-			else {
-				boolean contains = lineRect.intersectsLine(axes.dataXtoBoundsX(line[0].getX())*xFactor, axes.dataYtoBoundsY(line[0].getY())*yFactor, axes.dataXtoBoundsX(line[1].getX())*xFactor, axes.dataYtoBoundsY(line[1].getY())*yFactor);
-				return contains;
-			}
-			
-		}
-		
-		if (currentMode == BOXES) {
-			double boxWidth = calculateBoxWidth();
+//	protected void regenerateShape() {
+//		if (xySeries.size()==0) {
+//			pathShape = new GeneralPath();
+//			return;
+//		}
+//		
+//		if (pathShape == null) {
+//			pathShape = new GeneralPath(new Line2D.Double(xySeries.getX(0), xySeries.getY(0), xySeries.getX(1), xySeries.getY(1)) );
+//		}
+//		else 
+//			pathShape.reset();
+//		
+//		if (currentMode == LINES || currentMode == POINTS_AND_LINES || currentMode == POINTS) {
+//			if (xySeries.size()>1) {
+//				double x1 = axes.dataXtoBoundsX(xySeries.getX(0)  );
+//				double y1 = axes.dataYtoBoundsY(xySeries.getY(0) );
+//				double x2 = axes.dataXtoBoundsX( xySeries.getX(1));
+//				double y2 = axes.dataYtoBoundsY( xySeries.getY(1) );
+//				pathShape = new GeneralPath(new Line2D.Double(x1, y1, x2, y2) );
+//				
+//				boolean connect = true;
+//				
+//				Point2D p;
+//				for(int i=1; i<xySeries.size(); i++) {
+//					p = xySeries.get(i);
+//					x1 = axes.dataXtoBoundsX( p.getX() );
+//					y1 = axes.dataYtoBoundsY( p.getY() );
+//					
+//					//We've moved from a undrawn region into an OK one, so just move the 'pointer'
+//					//to the new site
+//					if (!connect && !(Double.isNaN(y1))) {
+//						pathShape.moveTo(x1, y1);
+//						connect = true;
+//					}
+//					
+//					//Moving from a good region to an undrawn one
+//					if (connect && Double.isNaN(y1)) {
+//						connect = false;
+//					}
+//					
+//					
+//					if (connect)
+//						pathShape.lineTo(x1, y1);
+//				}
+//			}
+//		}
+//				
+//		
+////		if (currentMode == BOXES) {
+////			// Currently there is no pathShape that defines the boundaries for BOXES mode. We use getboxForIndex(...)
+////			// to calculate a rectangle corresponding to the box for a particular index in the seiries, and that same
+////			// rectangle is used in the contains(x, y) method. 
+////		}
+//	
+//	}
+	
+	
+	
 
-
-			double yAxis = axes.dataYtoFigureY(0);
-			
-			double dataX = axes.boundsXtoDataX(x+(boxWidth*boxOffset+Math.ceil(boxWidth/2.0))/xFactor);
-			int boxIndex = xySeries.getIndexForXVal(dataX);
-			Rectangle2D rect = getBoxForIndex(boxIndex, yAxis); 
-			//System.out.println( " click x: " + x*xFactor + " data x: " + dataX + "Box index: " + boxIndex + " x: " + rect.getX() + " height: " + rect.getHeight() + " width: " + rect.getWidth() );
-			Point2D pos = new Point2D.Double(x*xFactor, y*yFactor);
-			if (rect == null)
-				return false;
-			else
-				return rect.contains(pos);
-		}
-		
-		if (currentMode == POINTS) {
-			return pathShape.intersects(x*xFactor-3, y*yFactor-3, 5, 5);
-		}
-		
-		return false;
-	}
+	/**
+	 * Returns true if this series element contains the given point
+	 */
+	public abstract boolean contains(double x, double y);
+	
+//	public boolean contains(double x, double y) {		
+//		
+//		if (currentMode == POINTS_AND_LINES || currentMode == LINES) {
+//			double dataX = axes.boundsXtoDataX(x);
+//			
+//			lineRect.setRect(x*xFactor-4, y*yFactor-4, 7, 7);
+//			Point2D[] line = xySeries.getLineForXVal(dataX);
+//			if (line==null || Double.isNaN(line[0].getY()) || Double.isNaN(line[1].getY())) {
+//				return false;
+//			}
+//			else {
+//				boolean contains = lineRect.intersectsLine(axes.dataXtoBoundsX(line[0].getX())*xFactor, axes.dataYtoBoundsY(line[0].getY())*yFactor, axes.dataXtoBoundsX(line[1].getX())*xFactor, axes.dataYtoBoundsY(line[1].getY())*yFactor);
+//				return contains;
+//			}
+//			
+//		}
+//		
+//		if (currentMode == BOXES) {
+//			double boxWidth = calculateBoxWidth();
+//
+//
+//			double yAxis = axes.dataYtoFigureY(0);
+//			
+//			double dataX = axes.boundsXtoDataX(x+(boxWidth*boxOffset+Math.ceil(boxWidth/2.0))/xFactor);
+//			int boxIndex = xySeries.getIndexForXVal(dataX);
+//			Rectangle2D rect = getBoxForIndex(boxIndex, yAxis); 
+//			//System.out.println( " click x: " + x*xFactor + " data x: " + dataX + "Box index: " + boxIndex + " x: " + rect.getX() + " height: " + rect.getHeight() + " width: " + rect.getWidth() );
+//			Point2D pos = new Point2D.Double(x*xFactor, y*yFactor);
+//			if (rect == null)
+//				return false;
+//			else
+//				return rect.contains(pos);
+//		}
+//		
+//		if (currentMode == POINTS) {
+//			return pathShape.intersects(x*xFactor-3, y*yFactor-3, 5, 5);
+//		}
+//		
+//		return false;
+//	}
 	
 	
 	/**
@@ -420,30 +389,12 @@ public class XYSeriesElement extends SeriesElement {
 	
 	
 	/**
-	 * Returns the rectangular box shape in pixel coordinates associated with the index i in the 
-	 * data series. Requires knowing what the box width is and where the y-axis is.
+	 * Paint this series using the given graphics object
+	 * @param g
 	 */
-	protected Rectangle2D getBoxForIndex(int i, double yZero) {
-		if (i>=xySeries.size()) {
-			return null;
-		}
-		double boxWidth = calculateBoxWidth();
-		
-		double halfBox = Math.ceil(boxWidth/2.0);
-		double dataY = axes.dataYtoFigureY(xySeries.getY(i));
-		double xOffset = boxOffset*boxWidth;
-		if (xySeries.get(i).getY()>0) 
-			boxRect.setRect(axes.dataXtoFigureX(xySeries.getX(i))-halfBox-xOffset, dataY, boxWidth, yZero-dataY);
-		else 
-			boxRect.setRect(axes.dataXtoFigureX(xySeries.getX(i))-halfBox-xOffset, yZero, boxWidth, dataY-yZero);
-
-		return boxRect;
-	}
+	public abstract void paintSeries(Graphics2D g);
 	
 	public void paint(Graphics2D g) {
-//		if (! scaleHasBeenSet) {
-//			System.out.println(" Calling paint, but scale has not been set! ");
-//		}
 		
 		if (! dataBoundsSet )
 			setDataBounds();
@@ -454,86 +405,57 @@ public class XYSeriesElement extends SeriesElement {
 		
 		g.setClip(clipBounds ); //Make sure we don't draw outside the lines
 		
-		if (isSelected) {
-			g.setColor(highlightColor);
-			g.setStroke(highlightStroke);
-			if (currentMode == LINES || currentMode == POINTS_AND_LINES || currentMode == BOXES) 
-				g.draw(pathShape);
-		}
+		paintSeries(g);
 		
-		g.setStroke(normalStroke);
-		
-		if (currentMode == LINES) {
-			g.setColor(getLineColor());
-			g.draw(pathShape);	
-		}
-		
-		if (currentMode == BOXES) {
-			g.setColor(getLineColor());
-			double yAxis = axes.dataYtoFigureY(0);
-			
-			for(int i=0; i<xySeries.size(); i++) {
-				Rectangle2D rect = getBoxForIndex(i, yAxis);
-				drawBox(g, rect);
-			}
-		}
-
-		
-		if (currentMode == POINTS ) {
-			g.setColor(getLineColor());
-			for(int i=0; i<xySeries.size(); i++) {
-				drawMarker(g, round(axes.dataXtoFigureX(xySeries.getX(i))), round(axes.dataYtoFigureY(xySeries.getY(i))));
-			}
-		}
-		
-		if (currentMode == POINTS_AND_LINES ) {
-			g.setColor(getLineColor());
-			g.draw(pathShape);
-			
-			g.setColor(getLineColor());
-			for(int i=0; i<xySeries.size(); i++) {
-				drawMarker(g, round(axes.dataXtoFigureX(xySeries.getX(i))), round(axes.dataYtoFigureY(xySeries.getY(i)))); 
-			}
-		}	
+//		if (isSelected) {
+//			g.setColor(highlightColor);
+//			g.setStroke(highlightStroke);
+//			if (currentMode == LINES || currentMode == POINTS_AND_LINES || currentMode == BOXES) 
+//				g.draw(pathShape);
+//		}
+//		
+//		g.setStroke(normalStroke);
+//		
+//		if (currentMode == LINES) {
+//			g.setColor(getLineColor());
+//			g.draw(pathShape);	
+//		}
+//		
+//		if (currentMode == BOXES) {
+//			g.setColor(getLineColor());
+//			double yAxis = axes.dataYtoFigureY(0);
+//			
+//			for(int i=0; i<xySeries.size(); i++) {
+//				Rectangle2D rect = getBoxForIndex(i, yAxis);
+//				drawBox(g, rect);
+//			}
+//		}
+//
+//		
+//		if (currentMode == POINTS ) {
+//			g.setColor(getLineColor());
+//			for(int i=0; i<xySeries.size(); i++) {
+//				drawMarker(g, round(axes.dataXtoFigureX(xySeries.getX(i))), round(axes.dataYtoFigureY(xySeries.getY(i))));
+//			}
+//		}
+//		
+//		if (currentMode == POINTS_AND_LINES ) {
+//			g.setColor(getLineColor());
+//			g.draw(pathShape);
+//			
+//			g.setColor(getLineColor());
+//			for(int i=0; i<xySeries.size(); i++) {
+//				drawMarker(g, round(axes.dataXtoFigureX(xySeries.getX(i))), round(axes.dataYtoFigureY(xySeries.getY(i)))); 
+//			}
+//		}	
 		
 		g.setStroke(normalStroke);
 		g.setClip(0, 0, parent.getWidth(), parent.getHeight()); //return clip to usual bounds
 		
-
 	}
 
 
 
-	/**
-	 * Draws the rectangular box that corresponds to a particular point in this series  
-	 * @param rect
-	 */
-	private void drawBox(Graphics2D g, Rectangle2D rect) {
-		g.setColor(getLineColor());
-		g.fill(rect);
-
-		if (isSelected) {
-			g.setColor(highlightColor);
-			g.setStroke(highlightStroke);
-			g.draw(rect);
-		}
-		
-		if (rect.getWidth()>4) {
-			if (decorateBoxes) {
-				int dwidth = (int)Math.round(rect.getWidth()/2.0);
-				for(int i=0; i<dwidth; i++) {
-					g.setColor(new Color(1.0f, 1.0f, 1.0f, (0.2f)*(1.0f-(float)i/(float)dwidth)));
-					g.drawLine((int)Math.round(rect.getX()+i), (int)Math.round(rect.getY()), (int)Math.round(rect.getX()+i), (int)Math.round(rect.getY()+rect.getHeight()));
-				}
-
-			}
-			
-			g.setStroke(normalStroke);
-			g.setColor(boxOutlineColor);
-			g.draw(rect);
-		}		
-
-	}
 
 	
 }

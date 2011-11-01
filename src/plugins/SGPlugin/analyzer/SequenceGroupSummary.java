@@ -53,7 +53,7 @@ public class SequenceGroupSummary extends Analyzable implements SequenceGroupCha
 	
 	private javax.swing.JPanel parentPanel;
 	private JScrollPane scrollPane;
-	CategoryFigure baseFreqChart = new CategoryFigure();
+	//CategoryFigure baseFreqChart = new CategoryFigure();
 
 	SGStatisticsRegistry sgReg;
 	SegregatingSites segSites;
@@ -156,8 +156,8 @@ public class SequenceGroupSummary extends Analyzable implements SequenceGroupCha
 		baseFreqs.addPoint("T", tFreq.getValue());
 		
 		baseFreqs.setName(name);
-		baseFreqChart.addDataSeries(baseFreqs);
-		baseFreqChart.setYTickSpacing(0.25);	
+		//baseFreqChart.addDataSeries(baseFreqs);
+		//baseFreqChart.setYTickSpacing(0.25);	
 	}
 	
 	public void analyze(String name, Object data) {
@@ -254,8 +254,8 @@ public class SequenceGroupSummary extends Analyzable implements SequenceGroupCha
 		leftPanel.add(lowerTable);
 		
 		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
-		rightPanel.add( baseFreqChart );
-		baseFreqChart.setPreferredSize(new Dimension(200, 200));
+		//rightPanel.add( baseFreqChart );
+		//baseFreqChart.setPreferredSize(new Dimension(200, 200));
 		JPanel fileInfo = new JPanel();
 		fileInfo.setOpaque(false);
 		fileInfo.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "File Information"));
@@ -279,8 +279,8 @@ public class SequenceGroupSummary extends Analyzable implements SequenceGroupCha
 		labels.add("C");
 		labels.add("G");
 		labels.add("T");
-		baseFreqChart.setXLabelList(labels);	
-		baseFreqChart.setXLabel("Base Frequencies");
+		//baseFreqChart.setXLabelList(labels);	
+		//baseFreqChart.setXLabel("Base Frequencies");
 
 	}
 	

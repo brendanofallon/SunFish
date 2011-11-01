@@ -19,6 +19,8 @@ public abstract class SeriesFigure extends Figure {
 	
 	protected List<SeriesListener> seriesListeners;
 	
+	protected SeriesManager seriesManager = new SeriesManager(); //Holds information about various element types for series
+	
 	public SeriesFigure() {
 		seriesListeners = new ArrayList<SeriesListener>();
 	}
@@ -167,6 +169,14 @@ public abstract class SeriesFigure extends Figure {
 	}
 	
 	/**
+	 * Return the SeriesManager object that knows what types of SeriesElement we know how to draw
+	 * @return
+	 */
+	public SeriesManager getSeriesManager() {
+		return seriesManager;
+	}
+	
+	/**
 	 * Sets the mode of series to mode, if series is currently associated with the figure. In this
 	 * case true is returned. Otherwise, nothing is set and false is returned.
 	 * 
@@ -174,16 +184,16 @@ public abstract class SeriesFigure extends Figure {
 	 * @param mode The new mode of the series
 	 * @return True if series was found, false otw
 	 */
-	public boolean setSeriesMode(AbstractSeries series, String mode) {
-		for(SeriesElement el : seriesElements) {
-			if (el.getSeries()==series) {
-				el.setMode(mode);
-				fireSeriesChangedEvent(series);
-				return true;
-			}
-		}
-		return false;
-	}
+//	public boolean setSeriesMode(AbstractSeries series, String mode) {
+//		for(SeriesElement el : seriesElements) {
+//			if (el.getSeries()==series) {
+//				el.setMode(mode);
+//				fireSeriesChangedEvent(series);
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
 	
 	/**
 	 * Sets the line color of the series, if series is currently associated with the figure. In this
