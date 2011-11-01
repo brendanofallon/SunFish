@@ -5,6 +5,8 @@ import guiWidgets.ColorSwatchButton;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -76,7 +78,12 @@ public class SeriesConfigFrame extends javax.swing.JFrame {
 	        nameField.setText("jTextField1");
 
 	        styleBox.setModel(new javax.swing.DefaultComboBoxModel(parent.getSeriesManager().getElementTypeNames().toArray()));
-
+	        styleBox.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					styleBoxChanged();
+				}	
+	        });
+	        
 	        jLabel5.setText("Line color :");
 
 	        lineColorButton.setText("----");
@@ -206,7 +213,28 @@ public class SeriesConfigFrame extends javax.swing.JFrame {
 	        this.getRootPane().setDefaultButton(doneButton);
 	    }
 	    
-	    protected void removeButtonActionPerformed(ActionEvent evt) {
+	    protected void styleBoxChanged() {
+			if (styleBox.getSelectedItem().equals(MarkerLineElement.getStaticInstantiator().getSeriesTypeName())) {
+				markerTypeBox.setEnabled(true);
+				markerSizeSlider.setEnabled(true);
+			}
+			else {
+				markerTypeBox.setEnabled(false);
+				markerSizeSlider.setEnabled(false);
+			}
+			
+			XYSeriesElement newSeries = parent.getSeriesManager().convert(seriesOwner, (String)styleBox.getSelectedItem());
+			
+			parent.removeElement(seriesOwner);
+			seriesOwner = newSeries;
+			parent.addSeriesElement(newSeries);
+			updateOptions();
+			parent.repaint();
+			repaint();
+			
+		}
+
+		protected void removeButtonActionPerformed(ActionEvent evt) {
 			parent.removeSeries(seriesOwner.getSeries());
 			parent.inferBoundsPolitely();
 			doneButtonActionPerformed(null);
@@ -224,29 +252,26 @@ public class SeriesConfigFrame extends javax.swing.JFrame {
 
 		public void display(XYSeriesElement el) {
 	    	nameField.setText(el.getName() );
-	    	
+
+    		styleBox.setSelectedItem( el.getInstantiator().getSeriesTypeName() );
+    		
 	    	if (el instanceof MarkerLineElement) {
-	    		styleBox.setEnabled(true);
-	    		styleBox.setSelectedItem( ((MarkerLineElement)el).getMarkerType() );
+
 	    		markerSizeSlider.setEnabled(true);
 	    		markerSizeSlider.setValue( ((MarkerLineElement)el).getMarkerSize());
+	    		
+	    		markerTypeBox.setEnabled(true);
+	    		markerTypeBox.setSelectedItem( ((MarkerLineElement)el).getMarkerType() );
 	    	}
 	    	else {
-	    		styleBox.setEnabled(false);
-	    		styleBox.setEnabled(false);
+	    		markerTypeBox.setEnabled(false);
+	    		markerSizeSlider.setEnabled(false);
 	    	}
 	    	
+	
 	    	
-	    	try {
-	    		markerTypeBox.setSelectedItem(markerType);
-	    	}
-	    	catch (IllegalArgumentException ex) {
-	    		System.out.println("Can't set the marker type to : " + markerType);
-	    	}
+	    	lineWidthSlider.setValue( (int)el.getLineWidth() );
 	    	
-	    	lineWidthSlider.setValue( el.getLineWidth() );
-	    	
-
 	    	lineColorButton.setColor( el.getLineColor() );
 	    	setInitialOptions();
 	    	setVisible(true);
@@ -258,6 +283,7 @@ public class SeriesConfigFrame extends javax.swing.JFrame {
 	    }
 
 	    private void updateOptions() {
+	    	//Not all options are used by all element types
 	    	SeriesOptions ops = new SeriesOptions();
 	    	ops.name = nameField.getText();
 	    	ops.type = (String)styleBox.getSelectedItem();

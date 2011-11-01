@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
 import figure.series.LineSeriesElement.LineSeriesInstantiator;
+import figure.series.MarkerLineElement.MarkerLineInstantiator;
 
 public class BoxSeriesElement extends XYSeriesElement {
 
@@ -110,7 +111,11 @@ public class BoxSeriesElement extends XYSeriesElement {
 		g.fillRect(x+12, y-10, x+19, 10);
 	}
 	
-	public static SeriesInstantiator getInstantiator() {
+	public static SeriesInstantiator getStaticInstantiator() {
+		return new BoxSeriesInstantiator();
+	}
+	
+	public SeriesInstantiator getInstantiator() {
 		return new BoxSeriesInstantiator();
 	}
 	
@@ -123,7 +128,7 @@ public class BoxSeriesElement extends XYSeriesElement {
 
 		@Override
 		public String getSeriesTypeName() {
-			return "Line";
+			return "Box";
 		}
 		
 	}

@@ -19,7 +19,7 @@ public abstract class SeriesFigure extends Figure {
 	
 	protected List<SeriesListener> seriesListeners;
 	
-	protected SeriesManager seriesManager = new SeriesManager(); //Holds information about various element types for series
+	protected SeriesManager seriesManager;
 	
 	public SeriesFigure() {
 		seriesListeners = new ArrayList<SeriesListener>();
@@ -146,10 +146,18 @@ public abstract class SeriesFigure extends Figure {
 				toRemove = el;
 		}
 		if (toRemove != null) {
-			seriesElements.remove(toRemove);
-			elements.remove(toRemove);
-			fireSeriesRemovedEvent(toRemove.getSeries());
+			removeSeriesElement(toRemove);
 		}
+	}
+	
+	/**
+	 * Remove the selected series element from this figure
+	 * @param element
+	 */
+	public void removeSeriesElement(SeriesElement element) {
+		seriesElements.remove(element);
+		elements.remove(element);
+		fireSeriesRemovedEvent(element.getSeries());
 	}
 	
 	/**

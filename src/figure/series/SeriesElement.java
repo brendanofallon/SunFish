@@ -40,14 +40,6 @@ public abstract class SeriesElement extends FigureElement {
 		this.series = series;
 	}
 	
-	/**
-	 * Draw the marker for this series using the specified graphics element at the specified position.
-	 * @param g
-	 * @param x
-	 * @param y
-	 */
-	public abstract void drawMarker(Graphics2D g, int x, int y);
-	
 	public abstract double getMinY();
 	
 	public abstract double getMaxY();

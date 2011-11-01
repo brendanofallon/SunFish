@@ -28,7 +28,6 @@ public abstract class XYSeriesElement extends SeriesElement {
 	
 	protected XYSeries xySeries;
 	GeneralPath pathShape;
-	GeneralPath markerShape;
 	
 	AxesElement axes;
 	
@@ -39,11 +38,6 @@ public abstract class XYSeriesElement extends SeriesElement {
 	boolean dataBoundsSet = false;
 	
 	boolean scaleHasBeenSet = false;
-	
-
-	//Tracks current marker type and size
-	String currentMarkerType = markerTypes[2];
-	int markerSize = 6;
 	
 	Color boxOutlineColor = Color.GRAY;
 	
@@ -101,6 +95,19 @@ public abstract class XYSeriesElement extends SeriesElement {
 	}
 	
 
+	/**
+	 * Paint this series using the given graphics object
+	 * @param g
+	 */
+	public abstract void paintSeries(Graphics2D g);
+	
+	/**
+	 * Obtain the SeriesInstantiator object used to create this type of XYSeriesElement
+	 * @return
+	 */
+	public abstract SeriesInstantiator getInstantiator();
+	
+	
 	@Override
 	public double getMaxY() {
 		return xySeries.getMaxY();
@@ -121,36 +128,8 @@ public abstract class XYSeriesElement extends SeriesElement {
 		return xySeries.getMinX();
 	}
 	
-	public int indexForMarkerType() {
-		for(int i=0; i<markerTypes.length; i++) {
-			if (currentMarkerType.equals(markerTypes[i])) {
-				return i;
-			}
-		}
-		
-		//We should never get here
-		throw new IllegalStateException("Illegal current marker type in XYSeries Element : " + currentMarkerType);
-	}
 	
 	
-	/**
-	 * Set the marker type for this series to the given type, which should be a member of markerTypes. This
-	 * throws an IllegalArgumentException if the supplied type is not a valid type.
-	 * @param markerType
-	 */
-	public void setMarker(String markerType) {
-		boolean valid = false;
-		for(int i=0; i<markerTypes.length; i++) {
-			if (markerTypes[i].equals(markerType)) {
-				currentMarkerType = markerType;
-				valid = true;
-			}
-		}
-		
-		if (!valid) {
-			throw new IllegalArgumentException("Cannot set marker type to : " + markerType);
-		}
-	}
 	
 	public void popupConfigureTool(java.awt.Point pos) {
 		configFrame.display(this);
@@ -166,16 +145,8 @@ public abstract class XYSeriesElement extends SeriesElement {
 		xySeries.setName( ops.name );
 		setLineColor(ops.lineColor);
 		
-//		normalStroke = new BasicStroke((float)ops.lineWidth);
-//		highlightStroke = new BasicStroke((float)ops.lineWidth+highlightWidthIncrease);
-		
 		normalStroke =  new BasicStroke((float)ops.lineWidth, normalStroke.getEndCap(), normalStroke.getLineJoin(), normalStroke.getMiterLimit(), normalStroke.getDashArray(), normalStroke.getDashPhase());;
 		highlightStroke = new BasicStroke(normalStroke.getLineWidth()+highlightWidthIncrease, normalStroke.getEndCap(), normalStroke.getLineJoin(), normalStroke.getMiterLimit(), normalStroke.getDashArray(), normalStroke.getDashPhase());
-
-		
-		currentMarkerType = ops.markerType;
-		markerSize = ops.markerSize;
-		
 		
 		if (resort) {
 			((XYSeriesFigure)parent).getElementList().resort();
@@ -203,65 +174,6 @@ public abstract class XYSeriesElement extends SeriesElement {
 	 * underlying series has changed somehow
 	 */
 	protected abstract void regenerateShape();
-	
-//	protected void regenerateShape() {
-//		if (xySeries.size()==0) {
-//			pathShape = new GeneralPath();
-//			return;
-//		}
-//		
-//		if (pathShape == null) {
-//			pathShape = new GeneralPath(new Line2D.Double(xySeries.getX(0), xySeries.getY(0), xySeries.getX(1), xySeries.getY(1)) );
-//		}
-//		else 
-//			pathShape.reset();
-//		
-//		if (currentMode == LINES || currentMode == POINTS_AND_LINES || currentMode == POINTS) {
-//			if (xySeries.size()>1) {
-//				double x1 = axes.dataXtoBoundsX(xySeries.getX(0)  );
-//				double y1 = axes.dataYtoBoundsY(xySeries.getY(0) );
-//				double x2 = axes.dataXtoBoundsX( xySeries.getX(1));
-//				double y2 = axes.dataYtoBoundsY( xySeries.getY(1) );
-//				pathShape = new GeneralPath(new Line2D.Double(x1, y1, x2, y2) );
-//				
-//				boolean connect = true;
-//				
-//				Point2D p;
-//				for(int i=1; i<xySeries.size(); i++) {
-//					p = xySeries.get(i);
-//					x1 = axes.dataXtoBoundsX( p.getX() );
-//					y1 = axes.dataYtoBoundsY( p.getY() );
-//					
-//					//We've moved from a undrawn region into an OK one, so just move the 'pointer'
-//					//to the new site
-//					if (!connect && !(Double.isNaN(y1))) {
-//						pathShape.moveTo(x1, y1);
-//						connect = true;
-//					}
-//					
-//					//Moving from a good region to an undrawn one
-//					if (connect && Double.isNaN(y1)) {
-//						connect = false;
-//					}
-//					
-//					
-//					if (connect)
-//						pathShape.lineTo(x1, y1);
-//				}
-//			}
-//		}
-//				
-//		
-////		if (currentMode == BOXES) {
-////			// Currently there is no pathShape that defines the boundaries for BOXES mode. We use getboxForIndex(...)
-////			// to calculate a rectangle corresponding to the box for a particular index in the seiries, and that same
-////			// rectangle is used in the contains(x, y) method. 
-////		}
-//	
-//	}
-	
-	
-	
 
 	/**
 	 * Returns true if this series element contains the given point
@@ -327,40 +239,7 @@ public abstract class XYSeriesElement extends SeriesElement {
 		}
 	};
 	
-	public void drawMarker(Graphics2D g, int x, int y) {
-		if (currentMarkerType.equals("Circle")) {
-			g.setColor(getLineColor());
-			g.fillOval((int)Math.round(x-markerSize/2.0), (int)Math.round(y-markerSize/2.0), markerSize, markerSize);
-		}
-		if (currentMarkerType.equals("Square")) {
-			g.setColor(getLineColor());
-			g.fillRect((int)Math.round(x-markerSize/2.0), (int)Math.round(y-markerSize/2.0), markerSize, markerSize);			
-		}
-		if (currentMarkerType.equals("Diamond")) {
-			g.setColor(getLineColor());
-			xvals[0] = (int)Math.round(x-markerSize/2.0);
-			xvals[1] = x;
-			xvals[2] = (int)Math.round(x+markerSize/2.0);
-			xvals[3] = x;
-			xvals[4] = xvals[0];
-			yvals[0] = y;
-			yvals[1] = (int)Math.round(y-markerSize/2.0);
-			yvals[2] = y;
-			yvals[3] = (int)Math.round(y+markerSize/2.0);
-			yvals[4] = y;
-			g.fillPolygon(xvals, yvals, 5);
-		}
-		if (currentMarkerType.equals("Plus")) {
-			g.setColor(getLineColor());
-			g.drawLine((int)Math.round(x-markerSize/2.0), y, (int)Math.round(x+markerSize/2.0), y);
-			g.drawLine(x, (int)Math.round(y-markerSize/2.0), x, (int)Math.round(y+markerSize/2.0));
-		}
-		if (currentMarkerType.equals("X")) {
-			g.setColor(getLineColor());
-			g.drawLine((int)Math.round(x-markerSize/2.0), (int)Math.round(y-markerSize/2.0), (int)Math.round(x+markerSize/2.0), (int)Math.round(y+markerSize/2.0));
-			g.drawLine((int)Math.round(x-markerSize/2.0), (int)Math.round(y+markerSize/2.0), (int)Math.round(x+markerSize/2.0), (int)Math.round(y-markerSize/2.0));
-		}
-	}
+	
 	
 	private void emitPathShape() {
 		AffineTransform transform = new AffineTransform();
@@ -380,19 +259,13 @@ public abstract class XYSeriesElement extends SeriesElement {
 		setDataBounds();
 				
 		currentTransform.setToScale(xFactor, yFactor);
-		pathShape.transform(currentTransform);
+		if (pathShape != null)
+			pathShape.transform(currentTransform);
 		
 		this.xFactor = xFactor;
 		this.yFactor = yFactor;	
 		scaleHasBeenSet = true;
 	}
-	
-	
-	/**
-	 * Paint this series using the given graphics object
-	 * @param g
-	 */
-	public abstract void paintSeries(Graphics2D g);
 	
 	public void paint(Graphics2D g) {
 		

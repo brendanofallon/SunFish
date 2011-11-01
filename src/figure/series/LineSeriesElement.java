@@ -6,6 +6,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import figure.series.MarkerLineElement.MarkerLineInstantiator;
+
 public class LineSeriesElement extends XYSeriesElement {
 
 	public LineSeriesElement(XYSeries series,
@@ -99,9 +101,14 @@ public class LineSeriesElement extends XYSeriesElement {
 		g.drawLine(x, y-5, x+5, y-5);
 	}
 	
-	public static SeriesInstantiator getInstantiator() {
+	public static SeriesInstantiator getStaticInstantiator() {
 		return new LineSeriesInstantiator();
 	}
+	
+	public SeriesInstantiator getInstantiator() {
+		return new LineSeriesInstantiator();
+	}
+	
 
 	public static class LineSeriesInstantiator implements SeriesInstantiator {
 

@@ -39,7 +39,7 @@ public class XYSeriesFigure extends SeriesFigure {
 
 	public XYSeriesFigure() {
 		setLayout(null); 
-
+		seriesManager = new SeriesManager(this);
 		seriesElements = new ArrayList<SeriesElement>();
 		xLabelElement = new TextElement("Position in sequence", this);
 		xLabelElement.setPosition(0.49, 0.90);
@@ -447,6 +447,8 @@ public class XYSeriesFigure extends SeriesFigure {
 			fireSeriesRemovedEvent(toRemove.getSeries());
 		}
 	}
+	
+	
 	
 	public double lowerVal(double x) {
 		return -1.0*upperVal(-1.0*x);
